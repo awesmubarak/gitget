@@ -3,6 +3,13 @@
 import logging
 import os
 import subprocess
+import yaml
+import sys
+
+def get_config():
+    with open(os.path.expanduser("~/.git_get.yml")) as file:
+        config = yaml.safe_load(file)
+    return config
 
 
 def git(command):
@@ -12,7 +19,7 @@ def git(command):
     try:
         subprocess.run(command.split(" "), stdout=subprocess.PIPE)
     except Exception as error_message:
-        logger.error("Failed to run command: " + command)
+        print("Failed to run command: " + command)
         logger.debug("Error message: " + str(error_message))
 
 
@@ -28,17 +35,23 @@ def set_logger():
     logger.setLevel(logging.DEBUG)
 
 
-def install():
+def install(package):
     target = os.path.abspath(os.path.expanduser("~/pro/git-get/files"))
     if not os.path.exists(target):
         os.makedirs(target)
-    git("clone https://github.com/" + "abactel/smhwr")
+    git("clone https://github.com/" + package)
 
 
-def main():
+def main(arguments):
     set_logger()
-    install()
+    if arguments[0] == "install":
+        config = get_config()
+        package = arguments[1]
+        logger.debug("Package to install: " + package)
+        install(package)
+    else:
+        print("Invalid command")
 
 
 if __name__ == '__main__':
-    main()
+    main(sys.argv[1:])
