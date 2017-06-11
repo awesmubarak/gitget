@@ -3,25 +3,30 @@
 import logging
 import os
 import subprocess
-import yaml
 import sys
+import yaml
 
 
 def get_config():
-    with open(os.path.expanduser("~/.git_get/config.yml")) as file:
-        config = yaml.safe_load(file)
+    """Load configuration file"""
+    try:
+        with open(os.path.expanduser("~/.git_get/config.yml")) as file:
+            config = yaml.safe_load(file)
+    except FileNotFoundError:
+        logger.error("Configuration file not found")
+        sys.exit(1)
     return config
 
 
-def git(command):
-    """Runs command"""
-    command = "git " + command
+def run_command(command):
+    """Runs and handlles commands"""
     logger.debug("Running: " + command)
     try:
         subprocess.run(command.split(" "), stdout=subprocess.PIPE)
     except Exception as error_message:
-        print("Failed to run command: " + command)
+        logger.error("Failed to run command: " + command)
         logger.debug("Error message: " + str(error_message))
+        sys.exit(1)
 
 
 def set_logger():
@@ -29,8 +34,7 @@ def set_logger():
     global logger
     logger = logging.getLogger()
     handler = logging.StreamHandler()
-    formatter = logging.Formatter(
-        "%(asctime)s %(name)-8s %(levelname)-8s %(message)s")
+    formatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
     handler.setFormatter(formatter)
     logger.addHandler(handler)
     logger.setLevel(logging.DEBUG)
@@ -39,42 +43,60 @@ def set_logger():
 def install(package):
     """Installs packages"""
     # Load package list
-    with open(os.path.expanduser("~/.git_get/packages.yml"), "r") as file:
-        package_list = yaml.safe_load(file)
+    try:
+        # Try/execept not below as taken care of here
+        with open(os.path.expanduser("~/.git_get/packages.yml"), "r") as file:
+            package_list = yaml.safe_load(file)
+    except FileNotFoundError:
+        logger.error("Package list not found")
     # Install package or inform user already installed
     if package not in package_list:
-        git("clone https://github.com/" + package)
-        # add to packages list
+        run_command("git clone https://github.com/" + package)
+        # Add to packages list
         current_location = os.path.dirname(os.path.realpath(__file__))
         package_list[package] = current_location + "/"+ package.split("/")[-1]
         with open(os.path.expanduser("~/.git_get/packages.yml"), "w") as file:
             file.write(yaml.dump(package_list, default_flow_style=False))
+        logger.debug("That went better than expected")
+        sys.exit(0)
     else:
-        print("Package already installed")
+        logger.error("Package already installed")
+        sys.exit(1)
 
 
 def remove(package):
     """Removes packages"""
-    with open(os.path.expanduser("~/.git_get/packages.yml"), "r") as file:
-        package_list = yaml.safe_load(file)
+    try:
+        # Try/execept not below as taken care of here
+        with open(os.path.expanduser("~/.git_get/packages.yml"), "r") as file:
+            package_list = yaml.safe_load(file)
+    except FileNotFoundError:
+        logger.error("Package list not found")
+    # Remove package or inform user not installed
     if package in package_list:
-        subprocess.run(["rm", package_list[package], "-r"], stdout=subprocess.PIPE)
+        subprocess.run(["rm", package_list[package], "-rf"], stdout=subprocess.PIPE)
+        # Write new package list
         del package_list[package]
         with open(os.path.expanduser("~/.git_get/packages.yml"), "w") as file:
             file.write(yaml.dump(package_list, default_flow_style=False))
+        logger.debug("That went better than expected")
+        sys.exit(0)
     else:
-        print("Package no installeds")
+        logger.error("Package not installed")
+        sys.exit(1)
 
 
 def main(arguments):
     set_logger()
-    # get command
+    logger.debug("Starting")
+    # get command and execute appropriate function
     if arguments[0] == "install":
         install(arguments[1])
     elif arguments[0] == "remove":
         remove(arguments[1])
     else:
-        print("Invalid command")
+        logger.error("Invalid command: " + " ".join(arguments))
+        sys.exit(1)
 
 
 if __name__ == '__main__':
