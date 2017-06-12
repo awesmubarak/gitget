@@ -22,7 +22,14 @@ def run_command(command):
     """Runs and handlles commands"""
     logger.debug("Running: " + command)
     try:
-        subprocess.run(command.split(" "), stdout=subprocess.PIPE)
+        FNULL = open(os.devnull, 'w')
+        exit_code = subprocess.call(command.split(" "), stdout=FNULL,
+                                    stderr=subprocess.STDOUT)
+        if exit_code == 0:
+            logger.debug("Successfully ran command")
+        else:
+            logger.error("Command exited with " + str(exit_code))
+            sys.exit(1)
     except Exception as error_message:
         logger.error("Failed to run command: " + command)
         logger.debug("Error message: " + str(error_message))
