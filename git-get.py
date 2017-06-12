@@ -113,7 +113,19 @@ def upgrade():
         elif return_value == 1:
             logger.warning("Package " + package_name +
                            " may not have a working remote")
-    logger.info("Bye.")
+    logger.info("Upgraded all possible packages.")
+    sys.exit(0)
+
+
+def list_packages():
+    """List all packages and isntall locations"""
+    package_list = get_package_list()
+    print("")
+    for package_name in package_list:
+        package_location = package_list[package_name][0]
+        print((package_name).ljust(25) + package_location)
+    print("")
+    logger.info("Succefully Listed packages.")
     sys.exit(0)
 
 
@@ -127,6 +139,8 @@ def main(arguments):
         remove(arguments[1])
     elif arguments[0] == "upgrade":
         upgrade()
+    elif arguments[0] == "list":
+        list_packages()
     else:
         logger.error("Invalid command: " + " ".join(arguments))
         sys.exit(1)
