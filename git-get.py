@@ -18,18 +18,22 @@ def get_config():
     return config
 
 
-def run_command(command):
-    """Runs and handlles commands"""
-    logger.debug("Running: " + command)
+def run_command(command, quiet=0):
+    """Runs and handlles commands
+    Quiet values:
+    -   0 - logs all commands and errors
+    -   1 - logs only errors
+    -   2 - logs nothing
+    """
+    if quiet < 1:
+        logger.debug("Running: " + command)
     try:
         FNULL = open(os.devnull, 'w')
         exit_code = subprocess.call(command.split(" "), stdout=FNULL,
                                     stderr=subprocess.STDOUT)
-        if exit_code == 0:
-            logger.debug("Successfully ran command")
-        else:
+        if exit_code != 0 and quiet < 2:
             logger.error("Command exited with " + str(exit_code))
-            sys.exit(1)
+        return exit_code
     except Exception as error_message:
         logger.error("Failed to run command: " + command)
         logger.debug("Error message: " + str(error_message))
@@ -47,25 +51,29 @@ def set_logger():
     logger.setLevel(logging.DEBUG)
 
 
-def install(package):
-    """Installs packages"""
-    # Load package list
+def get_package_list():
+    """Loads package list from file"""
     try:
-        # Try/execept not below as taken care of here
         with open(os.path.expanduser("~/.git_get/packages.yml"), "r") as file:
             package_list = yaml.safe_load(file)
     except FileNotFoundError:
         logger.error("Package list not found")
+        sys.exit(1)
+    return package_list
+
+
+def install(package):
+    """Installs packages"""
+    package_list = get_package_list()
     # Install package or inform user already installed
     if package not in package_list:
         run_command("git clone https://github.com/" + package)
         # Add to packages list
-        current_location = os.path.dirname(os.path.realpath(__file__))
-        package_location = current_location + "/" + package.split("/")[-1]
+        package_location = os.getcwd() + "/" + package.split("/")[-1]
         package_list[package] = [package_location, False]
         with open(os.path.expanduser("~/.git_get/packages.yml"), "w") as file:
             file.write(yaml.dump(package_list, default_flow_style=False))
-        logger.debug("That went better than expected")
+        logger.info("Bye.")
         sys.exit(0)
     else:
         logger.error("Package already installed")
@@ -74,12 +82,7 @@ def install(package):
 
 def remove(package):
     """Removes packages"""
-    try:
-        # Try/execept not below as taken care of here
-        with open(os.path.expanduser("~/.git_get/packages.yml"), "r") as file:
-            package_list = yaml.safe_load(file)
-    except FileNotFoundError:
-        logger.error("Package list not found")
+    package_list = get_package_list()
     # Remove package or inform user not installed
     if package in package_list:
         if input("Uninstall " + package + "? (y/N)") == "y":
@@ -88,7 +91,7 @@ def remove(package):
             del package_list[package]
             with open(os.path.expanduser("~/.git_get/packages.yml"), "w") as file:
                 file.write(yaml.dump(package_list, default_flow_style=False))
-            logger.debug("That went better than expected")
+            logger.info("Bye.")
             sys.exit(0)
         else:
             logger.info("Quitting")
@@ -98,14 +101,32 @@ def remove(package):
         sys.exit(1)
 
 
+def upgrade():
+    """Git pull all repositories"""
+    package_list = get_package_list()
+    for package_name in package_list:
+        # if not package[1]: # Checks if HEAD is not modified
+        package_location = package_list[package_name][0]
+        return_value = run_command("git -C " + package_location + " pull", 2)
+        if return_value == 0:
+            logger.info("Package " + package_name + " succesfully upgraded")
+        elif return_value == 1:
+            logger.warning("Package " + package_name +
+                           " may not have a working remote")
+    logger.info("Bye.")
+    sys.exit(0)
+
+
 def main(arguments):
     set_logger()
-    logger.debug("Starting")
+    logger.info("Starting")
     # get command and execute appropriate function
     if arguments[0] == "install":
         install(arguments[1])
     elif arguments[0] == "remove":
         remove(arguments[1])
+    elif arguments[0] == "upgrade":
+        upgrade()
     else:
         logger.error("Invalid command: " + " ".join(arguments))
         sys.exit(1)
