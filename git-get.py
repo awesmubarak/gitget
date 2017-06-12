@@ -73,7 +73,7 @@ def install(package):
         package_list[package] = [package_location, False]
         with open(os.path.expanduser("~/.git_get/packages.yml"), "w") as file:
             file.write(yaml.dump(package_list, default_flow_style=False))
-        logger.info("Bye.")
+        logger.info("Succefully installed package.")
         sys.exit(0)
     else:
         logger.error("Package already installed")
@@ -91,7 +91,7 @@ def remove(package):
             del package_list[package]
             with open(os.path.expanduser("~/.git_get/packages.yml"), "w") as file:
                 file.write(yaml.dump(package_list, default_flow_style=False))
-            logger.info("Bye.")
+            logger.info("Succefully removed package.")
             sys.exit(0)
         else:
             logger.info("Quitting")
