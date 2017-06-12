@@ -54,7 +54,8 @@ def install(package):
         run_command("git clone https://github.com/" + package)
         # Add to packages list
         current_location = os.path.dirname(os.path.realpath(__file__))
-        package_list[package] = current_location + "/"+ package.split("/")[-1]
+        package_location = current_location + "/" + package.split("/")[-1]
+        package_list[package] = [package_location, False]
         with open(os.path.expanduser("~/.git_get/packages.yml"), "w") as file:
             file.write(yaml.dump(package_list, default_flow_style=False))
         logger.debug("That went better than expected")
@@ -74,13 +75,17 @@ def remove(package):
         logger.error("Package list not found")
     # Remove package or inform user not installed
     if package in package_list:
-        subprocess.run(["rm", package_list[package], "-rf"], stdout=subprocess.PIPE)
-        # Write new package list
-        del package_list[package]
-        with open(os.path.expanduser("~/.git_get/packages.yml"), "w") as file:
-            file.write(yaml.dump(package_list, default_flow_style=False))
-        logger.debug("That went better than expected")
-        sys.exit(0)
+        if input("Uninstall " + package + "? (y/N)") == "y":
+            run_command("rm " + package_list[package][0] + " -rf")
+            # Write new package list
+            del package_list[package]
+            with open(os.path.expanduser("~/.git_get/packages.yml"), "w") as file:
+                file.write(yaml.dump(package_list, default_flow_style=False))
+            logger.debug("That went better than expected")
+            sys.exit(0)
+        else:
+            logger.info("Quitting")
+            sys.exit(0)
     else:
         logger.error("Package not installed")
         sys.exit(1)
