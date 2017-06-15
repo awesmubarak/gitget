@@ -7,15 +7,39 @@ import sys
 import yaml
 
 
+def set_logger():
+    """Initialises logger"""
+    global logger
+    logger = logging.getLogger()
+    handler = logging.StreamHandler()
+    formatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+    logger.setLevel(logging.DEBUG)
+
+
 def get_config():
     """Load configuration file"""
     try:
-        with open(os.path.expanduser("~/.git_get/config.yml")) as file:
+        with open(os.path.expanduser("~/.git-get/config.yml")) as file:
             config = yaml.safe_load(file)
+            logger.debug("Loaded config file")
     except FileNotFoundError:
         logger.error("Configuration file not found")
         sys.exit(1)
     return config
+
+
+def get_package_list():
+    """Loads package list from file"""
+    try:
+        with open(os.path.expanduser("~/.git-get/packages.yml"), "r") as file:
+            package_list = yaml.safe_load(file)
+            logger.debug("Loaded package list")
+    except FileNotFoundError:
+        logger.error("Package list not found")
+        sys.exit(1)
+    return package_list
 
 
 def run_command(command, quiet=0):
@@ -40,28 +64,6 @@ def run_command(command, quiet=0):
         sys.exit(1)
 
 
-def set_logger():
-    """Initialises logger"""
-    global logger
-    logger = logging.getLogger()
-    handler = logging.StreamHandler()
-    formatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
-    logger.setLevel(logging.DEBUG)
-
-
-def get_package_list():
-    """Loads package list from file"""
-    try:
-        with open(os.path.expanduser("~/.git_get/packages.yml"), "r") as file:
-            package_list = yaml.safe_load(file)
-    except FileNotFoundError:
-        logger.error("Package list not found")
-        sys.exit(1)
-    return package_list
-
-
 def install(package):
     """Installs packages"""
     package_list = get_package_list()
@@ -71,7 +73,7 @@ def install(package):
         # Add to packages list
         package_location = os.getcwd() + "/" + package.split("/")[-1]
         package_list[package] = [package_location, False]
-        with open(os.path.expanduser("~/.git_get/packages.yml"), "w") as file:
+        with open(os.path.expanduser("~/.git-get/packages.yml"), "w") as file:
             file.write(yaml.dump(package_list, default_flow_style=False))
         logger.info("Succefully installed package.")
         sys.exit(0)
@@ -89,7 +91,7 @@ def remove(package):
             run_command("rm " + package_list[package][0] + " -rf")
             # Write new package list
             del package_list[package]
-            with open(os.path.expanduser("~/.git_get/packages.yml"), "w") as file:
+            with open(os.path.expanduser("~/.git-get/packages.yml"), "w") as file:
                 file.write(yaml.dump(package_list, default_flow_style=False))
             logger.info("Succefully removed package.")
             sys.exit(0)
