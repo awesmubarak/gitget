@@ -42,7 +42,7 @@ def get_package_list():
     return package_list
 
 
-def run_command(command, quiet=0):
+def run_command(command, die_on_err=False, quiet=0):
     """Runs and handlles commands
     Quiet values:
     -   0 - logs all commands and errors
@@ -51,17 +51,15 @@ def run_command(command, quiet=0):
     """
     if quiet < 1:
         logger.debug("Running: " + command)
-    try:
-        FNULL = open(os.devnull, 'w')
-        exit_code = subprocess.call(command.split(" "), stdout=FNULL,
-                                    stderr=subprocess.STDOUT)
-        if exit_code != 0 and quiet < 2:
-            logger.error("Command exited with " + str(exit_code))
-        return exit_code
-    except Exception as error_message:
-        logger.error("Failed to run command: " + command)
-        logger.debug("Error message: " + str(error_message))
+    # Run command and store output
+    proc = subprocess.Popen(command.split(" "), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    output = proc.communicate()[0]
+    exit_code = proc.returncode
+    if die_on_err and exit_code != 0:
+        logger.error("Could not complete process")
+        logger.debug("Process exited with " + str(exit_code))
         sys.exit(1)
+    return output, exit_code
 
 
 def install(package):
@@ -69,7 +67,7 @@ def install(package):
     package_list = get_package_list()
     # Install package or inform user already installed
     if package not in package_list:
-        run_command("git clone https://github.com/" + package)
+        run_command("git clone https://github.com/" + package, die_on_err=True)
         # Add to packages list
         package_location = os.getcwd() + "/" + package.split("/")[-1]
         package_list[package] = [package_location, False]
@@ -88,7 +86,7 @@ def remove(package):
     # Remove package or inform user not installed
     if package in package_list:
         if input("Uninstall " + package + "? (y/N)") == "y":
-            run_command("rm " + package_list[package][0] + " -rf")
+            run_command("rm " + package_list[package][0] + " -rf", die_on_err=True)
             # Write new package list
             del package_list[package]
             with open(os.path.expanduser("~/.git-get/packages.yml"), "w") as file:
@@ -109,7 +107,8 @@ def upgrade():
     for package_name in package_list:
         # if not package[1]: # Checks if HEAD is not modified
         package_location = package_list[package_name][0]
-        return_value = run_command("git -C " + package_location + " pull", 2)
+        command = "git -C " + package_location + " pull"
+        tmp, return_value = run_command(command, quiet=2)
         if return_value == 0:
             logger.info("Package " + package_name + " succesfully upgraded")
         elif return_value == 1:
