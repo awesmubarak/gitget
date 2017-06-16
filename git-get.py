@@ -42,6 +42,11 @@ def get_package_list():
     return package_list
 
 
+def write_package_list(package_list):
+    with open(os.path.expanduser("~/.git-get/packages.yml"), "w") as file:
+        file.write(yaml.dump(package_list, default_flow_style=False))
+
+
 def run_command(command, die_on_err=True, quiet=0):
     """Runs and handlles commands
     Quiet values:
@@ -56,8 +61,9 @@ def run_command(command, die_on_err=True, quiet=0):
            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     output = proc.communicate()[0].decode("utf-8")[:-1]
     exit_code = proc.returncode
+    # Die if required
     if die_on_err and exit_code != 0:
-        logger.error("Could not complete process")
+        logger.critical("Process died")
         logger.debug("Process exited with " + str(exit_code))
         sys.exit(1)
     return output, exit_code
@@ -72,8 +78,7 @@ def install(package):
         # Add to packages list
         package_location = os.getcwd() + "/" + package.split("/")[-1]
         package_list[package] = [package_location, False]
-        with open(os.path.expanduser("~/.git-get/packages.yml"), "w") as file:
-            file.write(yaml.dump(package_list, default_flow_style=False))
+        write_package_list(package_list)
         logger.info("Succefully installed package.")
         sys.exit(0)
     else:
@@ -90,8 +95,7 @@ def remove(package):
             run_command("rm " + package_list[package][0] + " -rf")
             # Write new package list
             del package_list[package]
-            with open(os.path.expanduser("~/.git-get/packages.yml"), "w") as file:
-                file.write(yaml.dump(package_list, default_flow_style=False))
+            write_package_list(package_list)
             logger.info("Succefully removed package.")
             sys.exit(0)
         else:
@@ -123,7 +127,7 @@ def upgrade():
 
 
 def list_packages():
-    """List all packages and isntall locations"""
+    """List all packages and install locations"""
     package_list = get_package_list()
     print("")
     for package_name in package_list:
@@ -132,6 +136,21 @@ def list_packages():
     print("")
     logger.info("Succefully Listed packages.")
     sys.exit(0)
+
+
+def move_repo(package_name, end_location):
+    """Move a repository"""
+    package_list = get_package_list()
+    # Check if package is installed
+    if package_name not in package_list:
+        logger.error("Package not found in package list")
+        sys.exit(1)
+    # Run command
+    package_location = package_list[package_name][0]
+    run_command("mv " + package_location + " " + end_location)
+    # Update packages list
+    package_list[package_name][0] = os.path.expanduser(end_location)
+    write_package_list(package_list)
 
 
 def main(arguments):
@@ -146,6 +165,8 @@ def main(arguments):
         upgrade()
     elif arguments[0] == "list":
         list_packages()
+    elif arguments[0] == "mv":
+        move_repo(arguments[1], arguments[2])
     else:
         logger.error("Invalid command: " + " ".join(arguments))
         sys.exit(1)

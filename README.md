@@ -34,3 +34,9 @@ Run `git-pull` on all packagesin the package list.
 `git-get list`
 
 List all packages and install location.
+
+### move_repo
+
+`git-get mv octocat/Hello-World ~/important`
+
+Move a repository to another location.
