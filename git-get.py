@@ -42,7 +42,7 @@ def get_package_list():
     return package_list
 
 
-def run_command(command, die_on_err=False, quiet=0):
+def run_command(command, die_on_err=True, quiet=0):
     """Runs and handlles commands
     Quiet values:
     -   0 - logs all commands and errors
@@ -52,8 +52,9 @@ def run_command(command, die_on_err=False, quiet=0):
     if quiet < 1:
         logger.debug("Running: " + command)
     # Run command and store output
-    proc = subprocess.Popen(command.split(" "), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    output = proc.communicate()[0]
+    proc = subprocess.Popen(command.split(" "),
+           stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    output = proc.communicate()[0].decode("utf-8")[:-1]
     exit_code = proc.returncode
     if die_on_err and exit_code != 0:
         logger.error("Could not complete process")
@@ -67,7 +68,7 @@ def install(package):
     package_list = get_package_list()
     # Install package or inform user already installed
     if package not in package_list:
-        run_command("git clone https://github.com/" + package, die_on_err=True)
+        run_command("git clone https://github.com/" + package)
         # Add to packages list
         package_location = os.getcwd() + "/" + package.split("/")[-1]
         package_list[package] = [package_location, False]
@@ -86,7 +87,7 @@ def remove(package):
     # Remove package or inform user not installed
     if package in package_list:
         if input("Uninstall " + package + "? (y/N)") == "y":
-            run_command("rm " + package_list[package][0] + " -rf", die_on_err=True)
+            run_command("rm " + package_list[package][0] + " -rf")
             # Write new package list
             del package_list[package]
             with open(os.path.expanduser("~/.git-get/packages.yml"), "w") as file:
@@ -105,15 +106,18 @@ def upgrade():
     """Git pull all repositories"""
     package_list = get_package_list()
     for package_name in package_list:
-        # if not package[1]: # Checks if HEAD is not modified
+        # basic variable initiation
         package_location = package_list[package_name][0]
-        command = "git -C " + package_location + " pull"
-        tmp, return_value = run_command(command, quiet=2)
-        if return_value == 0:
+        base_command = "git -C " + package_location + " "
+        # check for remotes
+        output, tmp = run_command(base_command + "remote -v", die_on_err=False)
+        if len(output) != 0:
+            # upgrade packages
+            command = base_command + "pull"
+            tmp, return_value = run_command(command, quiet=2)
             logger.info("Package " + package_name + " succesfully upgraded")
-        elif return_value == 1:
-            logger.warning("Package " + package_name +
-                           " may not have a working remote")
+        else:
+            logger.info("Package " + package_name + " does not have any remotes")
     logger.info("Upgraded all possible packages.")
     sys.exit(0)
 
