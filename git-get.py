@@ -87,6 +87,27 @@ def install(package):
         sys.exit(1)
 
 
+def install_local(location):
+    """Install local package"""
+    package_list = get_package_list()
+    # Expand location
+    location = os.path.expanduser(location)
+    package = "local_" + str(location.split("/")[-1])
+    # Modify package name
+    if package in package_list:
+        package = package + "_1"
+    package_count = 0
+    while package in package_list:
+        package_count += 1
+        package = package[:-1] + str(package_count)
+    # Install package
+    package_location = os.getcwd() + "/" + location
+    package_list[package] = [package_location, False]
+    write_package_list(package_list)
+    logger.info("Succefully installed package.")
+    sys.exit(0)
+
+
 def remove(package):
     """Removes packages"""
     package_list = get_package_list()
@@ -159,7 +180,10 @@ def main(arguments):
     logger.info("Starting")
     # get command and execute appropriate function
     if arguments[0] == "install":
-        install(arguments[1])
+        if arguments[1] == "local":
+            install_local(arguments[2])
+        else:
+            install(arguments[1])
     elif arguments[0] == "remove":
         remove(arguments[1])
     elif arguments[0] == "upgrade":
