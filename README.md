@@ -20,7 +20,7 @@ forward slash. The repository will be download to the directory where called.
 
 Installs a package from a non-github site.
 
-`git-get install local Hello-World`
+`git-get install --local Hello-World`
 
 Add local file to package list.
 
@@ -30,7 +30,7 @@ Add local file to package list.
 
 Remove a repository from disk and package list
 
-`git-get remove soft octocat/Hello-World`
+`git-get remove --soft octocat/Hello-World`
 
 Remove a repository from the package list but keep on drive.
 
