@@ -114,13 +114,14 @@ def install_local(location):
     sys.exit(0)
 
 
-def remove(package):
+def remove(package, keep_package=False):
     """Removes packages"""
     package_list = get_package_list()
     # Remove package or inform user not installed
     if package in package_list:
         if input("Uninstall " + package + "? (y/N)") == "y":
-            run_command("rm " + package_list[package][0] + " -rf")
+            if not keep_package:
+                run_command("rm " + package_list[package][0] + " -rf")
             # Write new package list
             del package_list[package]
             write_package_list(package_list)
@@ -191,7 +192,10 @@ def main(arguments):
         else:
             install(arguments[1])
     elif arguments[0] == "remove":
-        remove(arguments[1])
+        if arguments[1] == "soft":
+            remove(arguments[2], keep_package=True)
+        else:
+            remove(arguments[1])
     elif arguments[0] == "upgrade":
         upgrade()
     elif arguments[0] == "list":

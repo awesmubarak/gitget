@@ -28,8 +28,11 @@ Add local file to package list.
 
 `git-get remove octocat/Hello-World`
 
-Remove a repository.
+Remove a repository from disk and package list
 
+`git-get remove soft octocat/Hello-World`
+
+Remove a repository from the package list but keep on drive.
 
 ### Upgrade
 
