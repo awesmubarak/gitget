@@ -16,6 +16,10 @@ Github repositories can be installed. The username of the owner and the
 repository name should be passed as command line arguments, seperated by a
 forward slash. The repository will be download to the directory where called.
 
+`git-get install https://gitlab.com/octocat/Hello-World`
+
+Installs a package from a non-github site.
+
 `git-get install local Hello-World`
 
 Add local file to package list.

@@ -73,12 +73,18 @@ def run_command(command, die_on_err=True, quiet=0):
 def install(package):
     """Installs packages"""
     package_list = get_package_list()
+    # Parse if package refers to direct URL
+    if package[:4] == "http" or package[:3] == "git":
+        package_name = "local_" + package.split("/")[-1]
+    else:
+        package_name = package
+        package = "https://github.com/" + package
     # Install package or inform user already installed
     if package not in package_list:
-        run_command("git clone https://github.com/" + package)
+        run_command("git clone " + package)
         # Add to packages list
         package_location = os.getcwd() + "/" + package.split("/")[-1]
-        package_list[package] = [package_location, False]
+        package_list[package_name] = [package_location, False]
         write_package_list(package_list)
         logger.info("Succefully installed package.")
         sys.exit(0)
