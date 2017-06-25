@@ -75,7 +75,7 @@ def install(remote_package):
     package_list = get_package_list()
     # parse if package refers to direct URL
     if remote_package[:4] == "http" or remote_package[:3] == "git":
-        package_name = remote_package.split("/")[-2]
+        package_name = remote_package.split("/")[:-2]
         if package_name[-4:] == ".git":
             package_name = package_name[:-4]
     else:
@@ -203,8 +203,15 @@ def open_file(file_name):
 
 
 def main(arguments):
+    def invalid_command():
+        logger.error("Invalid command: " + " ".join(arguments))
+        sys.exit(1)
     set_logger()
     logger.info("Starting")
+    # confirm that a command has been selected
+    if len(arguments) < 1:
+        logger.error("Command not supplied")
+        sys.exit(1)
     # get command and execute appropriate function
     if arguments[0] == "install":
         if arguments[1] == "local":
@@ -227,9 +234,10 @@ def main(arguments):
            open_file(os.path.expanduser("~/.git-get/packages.yml"))
         elif arguments[1] == "config":
             open_file(os.path.expanduser("~/.git-get/config.yml"))
+        else:
+            invalid_command()
     else:
-        logger.error("Invalid command: " + " ".join(arguments))
-        sys.exit(1)
+        invalid_command()
 
 
 if __name__ == '__main__':
