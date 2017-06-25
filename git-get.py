@@ -57,12 +57,12 @@ def run_command(command, die_on_err=True, quiet=0):
     """
     if quiet < 1:
         logger.debug("Running: " + command)
-    # Run command and store output
+    # run command and store output
     proc = subprocess.Popen(command.split(" "),
            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     output = proc.communicate()[0].decode("utf-8")[:-1]
     exit_code = proc.returncode
-    # Die if required
+    # die if required
     if die_on_err and exit_code != 0:
         logger.critical("Process died")
         logger.debug("Process exited with " + str(exit_code))
@@ -73,16 +73,16 @@ def run_command(command, die_on_err=True, quiet=0):
 def install(package):
     """Installs packages"""
     package_list = get_package_list()
-    # Parse if package refers to direct URL
+    # parse if package refers to direct URL
     if package[:4] == "http" or package[:3] == "git":
         package_name = package.split("/")[-2]
     else:
         package_name = package
         package = "https://github.com/" + package
-    # Install package or inform user already installed
+    # install package or inform user already installed
     if package not in package_list:
         run_command("git clone " + package)
-        # Add to packages list
+        # add to packages list
         package_location = os.getcwd() + "/" + package.split("/")[-1]
         package_list[package_name] = [package_location, False]
         write_package_list(package_list)
@@ -96,17 +96,17 @@ def install(package):
 def install_local(location):
     """Install local package"""
     package_list = get_package_list()
-    # Expand location
+    # expand location
     location = os.path.expanduser(location)
     package = "local_" + str(location.split("/")[-1])
-    # Modify package name
+    # modify package name
     if package in package_list:
         package = package + "_1"
     package_count = 0
     while package in package_list:
         package_count += 1
         package = package[:-1] + str(package_count)
-    # Install package
+    # install package
     package_location = os.getcwd() + "/" + location
     package_list[package] = [package_location, False]
     write_package_list(package_list)
@@ -117,12 +117,12 @@ def install_local(location):
 def remove(package, keep_package=False):
     """Removes packages"""
     package_list = get_package_list()
-    # Remove package or inform user not installed
+    # remove package or inform user not installed
     if package in package_list:
         if input("Uninstall " + package + "? (y/N)") == "y":
             if not keep_package:
                 run_command("rm " + package_list[package][0] + " -rf")
-            # Write new package list
+            # write new package list
             del package_list[package]
             write_package_list(package_list)
             logger.info("Succefully removed package.")
@@ -170,16 +170,34 @@ def list_packages():
 def move_repo(package_name, end_location):
     """Move a repository"""
     package_list = get_package_list()
-    # Check if package is installed
+    # check if package is installed
     if package_name not in package_list:
         logger.error("Package not found in package list")
         sys.exit(1)
-    # Run command
+    # run command
     package_location = package_list[package_name][0]
     run_command("mv " + package_location + " " + end_location)
-    # Update packages list
+    # update packages list
     package_list[package_name][0] = os.path.expanduser(end_location)
     write_package_list(package_list)
+
+
+def open_file(file_name):
+    editor = os.getenv("EDITOR")
+    if editor:
+        # does not use `run_command` as output needs to be shown
+        logger.debug("Running: " + editor + " " + file_name)
+        try:
+            subprocess.call([editor, file_name])
+        except Exception as e:
+            logger.critical("Could not open editor")
+            logger.debug("Error message: " + str(e))
+            sys.exit(1)
+        logger.info("File edited.")
+        sys.exit(0)
+    else:
+        logger.error("Editor not set, exiting")
+        sys.exit(1)
 
 
 def main(arguments):
@@ -202,6 +220,11 @@ def main(arguments):
         list_packages()
     elif arguments[0] == "mv":
         move_repo(arguments[1], arguments[2])
+    elif arguments[0] == "edit":
+        if arguments[1] == "packages":
+           open_file(os.path.expanduser("~/.git-get/packages.yml"))
+        elif arguments[1] == "config":
+            open_file(os.path.expanduser("~/.git-get/config.yml"))
     else:
         logger.error("Invalid command: " + " ".join(arguments))
         sys.exit(1)
