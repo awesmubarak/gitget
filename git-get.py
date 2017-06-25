@@ -70,22 +70,22 @@ def run_command(command, die_on_err=True, quiet=0):
     return output, exit_code
 
 
-def install(package):
+def install(remote_package):
     """Installs packages"""
     package_list = get_package_list()
     # parse if package refers to direct URL
-    if package[:4] == "http" or package[:3] == "git":
-        package_name = package.split("/")[-2]
+    if remote_package[:4] == "http" or remote_package[:3] == "git":
+        package_name = remote_package.split("/")[-2]
         if package_name[-4:] == ".git":
             package_name = package_name[:-4]
     else:
-        package_name = package
-        package = "https://github.com/" + package
+        package_name = remote_package
+        remote_package = "https://github.com/" + remote_package
     # install package or inform user already installed
-    if package not in package_list:
-        run_command("git clone " + package)
+    if remote_package not in package_list:
+        run_command("git clone " + remote_package)
         # add to packages list
-        package_location = os.getcwd() + "/" + package.split("/")[-1]
+        package_location = os.getcwd() + "/" + remote_package.split("/")[-1]
         package_list[package_name] = [package_location, False]
         write_package_list(package_list)
         logger.info("Succefully installed package.")
@@ -138,7 +138,7 @@ def remove(package, keep_package=False):
 
 
 def upgrade():
-    """Git pull all repositories"""
+    """Git pull all packages"""
     package_list = get_package_list()
     for package_name in package_list:
         # basic variable initiation
@@ -169,8 +169,8 @@ def list_packages():
     sys.exit(0)
 
 
-def move_repo(package_name, end_location):
-    """Move a repository"""
+def move_package(package_name, end_location):
+    """Move a package"""
     package_list = get_package_list()
     # check if package is installed
     if package_name not in package_list:
@@ -221,7 +221,7 @@ def main(arguments):
     elif arguments[0] == "list":
         list_packages()
     elif arguments[0] == "mv":
-        move_repo(arguments[1], arguments[2])
+        move_package(arguments[1], arguments[2])
     elif arguments[0] == "edit":
         if arguments[1] == "packages":
            open_file(os.path.expanduser("~/.git-get/packages.yml"))
