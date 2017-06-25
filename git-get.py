@@ -220,7 +220,7 @@ def main(arguments):
         upgrade()
     elif arguments[0] == "list":
         list_packages()
-    elif arguments[0] == "mv":
+    elif arguments[0] == "move":
         move_package(arguments[1], arguments[2])
     elif arguments[0] == "edit":
         if arguments[1] == "packages":

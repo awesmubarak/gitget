@@ -48,7 +48,7 @@ List all packages and install location.
 
 ### Move
 
-`git-get mv octocat/Hello-World ~/important`
+`git-get move octocat/Hello-World ~/important`
 
 Move a repository to another location.
 
