@@ -76,6 +76,8 @@ def install(package):
     # parse if package refers to direct URL
     if package[:4] == "http" or package[:3] == "git":
         package_name = package.split("/")[-2]
+        if package_name[-4:] == ".git":
+            package_name = package_name[:-4]
     else:
         package_name = package
         package = "https://github.com/" + package
