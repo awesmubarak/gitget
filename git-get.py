@@ -7,16 +7,28 @@ import sys
 import yaml
 
 
-def set_logger():
-    """Initialises logger"""
+def set_logger(detail_level=2):
+    """Initialises logger
+    Detail level values:
+    -   0 - Only messages
+    -   1 - Messages and time
+    -   2 - Messages, time and debug level
+    """
     global logger
     logger = logging.getLogger()
     handler = logging.StreamHandler()
-    formatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s",
-                                  "%H:%M:%S")
+    # set logger format
+    if detail_level == 0:
+        formatter = logging.Formatter("%(message)s")
+    elif detail_level == 1:
+        formatter = logging.Formatter("%(asctime)s %(message)s", "%H:%M:%S")
+    elif detail_level == 2:
+        formatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s",
+                                      "%H:%M:%S")
+    handler.setFormatter(formatter)
     handler.setFormatter(formatter)
     logger.addHandler(handler)
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(logging.INFO)
 
 
 def get_config():
@@ -206,7 +218,7 @@ def main(arguments):
     def invalid_command():
         logger.error("Invalid command: " + " ".join(arguments))
         sys.exit(1)
-    set_logger()
+    set_logger(detail_level=1)
     logger.info("Starting")
     # confirm that a command has been selected
     if len(arguments) < 1:
