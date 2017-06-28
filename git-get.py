@@ -17,6 +17,7 @@ def set_logger(detail_level=2):
     global logger
     logger = logging.getLogger()
     handler = logging.StreamHandler()
+    logger.addHandler(handler)
     # set logger format
     if detail_level == 0:
         formatter = logging.Formatter("%(message)s")
@@ -26,8 +27,6 @@ def set_logger(detail_level=2):
         formatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s",
                                       "%H:%M:%S")
     handler.setFormatter(formatter)
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
     logger.setLevel(logging.INFO)
 
 
@@ -152,7 +151,8 @@ def remove(package, keep_package=False):
 def upgrade():
     """Git pull all packages"""
     package_list = get_package_list()
-    for package_name in package_list:
+    num_packages = str(len(package_list))
+    for package_num, package_name in enumerate(package_list):
         # basic variable initiation
         package_location = package_list[package_name][0]
         base_command = "git -C " + package_location + " "
@@ -162,7 +162,9 @@ def upgrade():
             # upgrade packages
             command = base_command + "pull"
             tmp, return_value = run_command(command, quiet=2)
-            logger.info("Package " + package_name + " succesfully upgraded")
+            # print upgrade notice
+            progress = "(" + str(package_num) + "/" + num_packages + ")"
+            logger.info("Package " + package_name + " succesfully upgraded " + progress)
         else:
             logger.info("Package " + package_name + " does not have any remotes")
     logger.info("Upgraded all possible packages.")
