@@ -27,7 +27,7 @@ def set_logger(detail_level=2):
         formatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s",
                                       "%H:%M:%S")
     handler.setFormatter(formatter)
-    logger.setLevel(logging.INFO)
+    logger.setLevel(logging.DEBUG)
 
 
 def get_config():
@@ -70,7 +70,7 @@ def run_command(command, die_on_err=True, quiet=0):
         logger.debug("Running: " + command)
     # run command and store output
     proc = subprocess.Popen(command.split(" "),
-           stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     output = proc.communicate()[0].decode("utf-8")[:-1]
     exit_code = proc.returncode
     # die if required
@@ -85,9 +85,9 @@ def install(remote_package):
     """Installs packages"""
     package_list = get_package_list()
     # parse if package refers to direct URL
-    if remote_package[:4] == "http" or remote_package[:3] == "git":
-        package_name = remote_package.split("/")[:-2]
-        if package_name[-4:] == ".git":
+    if remote_package.startswith("http") or remote_package.startswith("git"):
+        package_name = "/".join(remote_package.split("/")[-2:])
+        if package_name.endswith(".git"):
             package_name = package_name[:-4]
     else:
         package_name = remote_package
@@ -96,8 +96,9 @@ def install(remote_package):
     if remote_package not in package_list:
         run_command("git clone " + remote_package)
         # add to packages list
-        package_location = os.getcwd() + "/" + remote_package.split("/")[-1]
-        package_list[package_name] = [package_location, False]
+        package_location = os.path.join(
+            os.getcwd(), remote_package.split("/")[-1])
+        package_list[str(package_name)] = [package_location, False]
         write_package_list(package_list)
         logger.info("Succefully installed package.")
         sys.exit(0)
@@ -120,7 +121,7 @@ def install_local(location):
         package_count += 1
         package = package[:-1] + str(package_count)
     # install package
-    package_location = os.getcwd() + "/" + location
+    package_location = os.path.join(os.getcwd(), location)
     package_list[package] = [package_location, False]
     write_package_list(package_list)
     logger.info("Succefully installed package.")
@@ -163,10 +164,13 @@ def upgrade():
             command = base_command + "pull"
             tmp, return_value = run_command(command, quiet=2)
             # print upgrade notice
-            progress = "(" + str(package_num) + "/" + num_packages + ")"
-            logger.info("Package " + package_name + " succesfully upgraded " + progress)
+            progress = "(" + str(package_num + 1) + \
+                "/" + str(num_packages) + ")"
+            logger.info("Package " + package_name +
+                        " succesfully upgraded " + progress)
         else:
-            logger.info("Package " + package_name + " does not have any remotes")
+            logger.info("Package " + package_name +
+                        " does not have any remotes")
     logger.info("Upgraded all possible packages.")
     sys.exit(0)
 
@@ -245,7 +249,7 @@ def main(arguments):
         move_package(arguments[1], arguments[2])
     elif arguments[0] == "edit":
         if arguments[1] == "packages":
-           open_file(os.path.expanduser("~/.git-get/packages.yml"))
+            open_file(os.path.expanduser("~/.git-get/packages.yml"))
         elif arguments[1] == "config":
             open_file(os.path.expanduser("~/.git-get/config.yml"))
         else:
