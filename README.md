@@ -40,6 +40,12 @@ Remove a repository from the package list but keep on drive.
 
 Run `git-pull` on all packages in the package list.
 
+### Check
+
+`git-get check`
+
+Check if all files are okay.
+
 ### List
 
 `git-get list`

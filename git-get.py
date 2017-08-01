@@ -93,12 +93,12 @@ def install(remote_package):
         package_name = remote_package
         remote_package = "https://github.com/" + remote_package
     # install package or inform user already installed
-    if remote_package not in package_list:
+    if package_name not in package_list:
         run_command("git clone " + remote_package)
         # add to packages list
         package_location = os.path.join(
             os.getcwd(), remote_package.split("/")[-1])
-        package_list[str(package_name)] = [package_location, False]
+        package_list[str(package_name)] = {"location": package_location}
         write_package_list(package_list)
         logger.info("Succefully installed package.")
         sys.exit(0)
@@ -122,7 +122,7 @@ def install_local(location):
         package = package[:-1] + str(package_count)
     # install package
     package_location = os.path.join(os.getcwd(), location)
-    package_list[package] = [package_location, False]
+    package_list[package] = {"location": package_location}
     write_package_list(package_list)
     logger.info("Succefully installed package.")
     sys.exit(0)
@@ -135,7 +135,7 @@ def remove(package, keep_package=False):
     if package in package_list:
         if input("Uninstall " + package + "? (y/N)") == "y":
             if not keep_package:
-                run_command("rm " + package_list[package][0] + " -rf")
+                run_command("rm " + package_list[package]["location"] + " -rf")
             # write new package list
             del package_list[package]
             write_package_list(package_list)
@@ -180,7 +180,7 @@ def list_packages():
     package_list = get_package_list()
     print("")
     for package_name in package_list:
-        package_location = package_list[package_name][0]
+        package_location = package_list[package_name]["location"]
         print((package_name).ljust(25) + package_location)
     print("")
     logger.info("Succefully Listed packages.")
@@ -195,10 +195,11 @@ def move_package(package_name, end_location):
         logger.error("Package not found in package list")
         sys.exit(1)
     # run command
-    package_location = package_list[package_name][0]
+    package_location = package_list[package_name]["location"]
+    end_location = os.path.abspath(end_location)
     run_command("mv " + package_location + " " + end_location)
     # update packages list
-    package_list[package_name][0] = os.path.expanduser(end_location)
+    package_list[package_name]["location"] = end_location
     write_package_list(package_list)
 
 
@@ -218,6 +219,34 @@ def open_file(file_name):
     else:
         logger.error("Editor not set, exiting")
         sys.exit(1)
+
+
+def check():
+    package_list = get_package_list()
+    # check core files
+    config_file = os.path.join("~", ".git-get", "config.yml")
+    if os.path.exists(os.path.expanduser(config_file)):
+        logger.info("Config file exists")
+    else:
+        logger.error("Config file not found")
+        sys.exit(1)
+    packages_file = os.path.join("~", ".git-get", "packages.yml")
+    if os.path.exists(os.path.expanduser(packages_file)):
+        logger.info("Packages list exists")
+    else:
+        logger.error("Packages list not found")
+        sys.exit(1)
+    # check packages
+    for package_name in package_list:
+        all_found = True
+        if os.path.isdir(package_list[package_name]["location"]):
+            logger.debug("Pakage " + package_name + " found")
+        else:
+            logger.error("Package " + package_name + " not found")
+            all_found = False
+    if all_found:
+        logger.info("All packages found")
+    logger.info("All checks complete")
 
 
 def main(arguments):
@@ -254,6 +283,8 @@ def main(arguments):
             open_file(os.path.expanduser("~/.git-get/config.yml"))
         else:
             invalid_command()
+    elif arguments[0] == "check":
+        check()
     else:
         invalid_command()
 
