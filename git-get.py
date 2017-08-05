@@ -3,8 +3,10 @@
 import logging
 import os
 import subprocess
-import sys
 import yaml
+
+from termcolor import colored
+from sys import exit, argv
 
 
 def set_logger(detail_level=2):
@@ -27,7 +29,7 @@ def set_logger(detail_level=2):
         formatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s",
                                       "%H:%M:%S")
     handler.setFormatter(formatter)
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(logging.INFO)
 
 
 def get_config():
@@ -38,7 +40,7 @@ def get_config():
             logger.debug("Loaded config file")
     except FileNotFoundError:
         logger.error("Configuration file not found")
-        sys.exit(1)
+        exit(1)
     return config
 
 
@@ -50,7 +52,7 @@ def get_package_list():
             logger.debug("Loaded package list")
     except FileNotFoundError:
         logger.error("Package list not found")
-        sys.exit(1)
+        exit(1)
     return package_list
 
 
@@ -77,7 +79,7 @@ def run_command(command, die_on_err=True, quiet=0):
     if die_on_err and exit_code != 0:
         logger.critical("Process died")
         logger.debug("Process exited with " + str(exit_code))
-        sys.exit(1)
+        exit(1)
     return output, exit_code
 
 
@@ -101,10 +103,10 @@ def install(remote_package):
         package_list[str(package_name)] = {"location": package_location}
         write_package_list(package_list)
         logger.info("Succefully installed package.")
-        sys.exit(0)
+        exit(0)
     else:
         logger.error("Package already installed")
-        sys.exit(1)
+        exit(1)
 
 
 def install_local(location):
@@ -125,7 +127,7 @@ def install_local(location):
     package_list[package] = {"location": package_location}
     write_package_list(package_list)
     logger.info("Succefully installed package.")
-    sys.exit(0)
+    exit(0)
 
 
 def remove(package, keep_package=False):
@@ -140,13 +142,13 @@ def remove(package, keep_package=False):
             del package_list[package]
             write_package_list(package_list)
             logger.info("Succefully removed package.")
-            sys.exit(0)
+            exit(0)
         else:
             logger.info("Quitting")
-            sys.exit(0)
+            exit(0)
     else:
         logger.error("Package not installed")
-        sys.exit(1)
+        exit(1)
 
 
 def upgrade():
@@ -155,24 +157,31 @@ def upgrade():
     num_packages = str(len(package_list))
     for package_num, package_name in enumerate(package_list):
         # basic variable initiation
-        package_location = package_list[package_name][0]
+        package_location = package_list[package_name]["location"]
         base_command = "git -C " + package_location + " "
         # check for remotes
         output, tmp = run_command(base_command + "remote -v", die_on_err=False)
+        # Create progress bar
+        progress = "(" + str(package_num + 1) + "/" + str(num_packages) + ")"
+        # Pull, figure out correct message and display
         if len(output) != 0:
-            # upgrade packages
             command = base_command + "pull"
-            tmp, return_value = run_command(command, quiet=2)
-            # print upgrade notice
-            progress = "(" + str(package_num + 1) + \
-                "/" + str(num_packages) + ")"
-            logger.info("Package " + package_name +
-                        " succesfully upgraded " + progress)
+            output, return_value = run_command(command, die_on_err=False)
+            if output == "Already up-to-date." and return_value == 0:
+                msg = ("Package " + package_name + " already up to date. "
+                       + colored(progress, "yellow"))
+            elif return_value == 0:
+                msg = ("Package " + package_name + " succesfully upgraded. "
+                       + colored(progress, "green"))
+            else:
+                msg = ("Package " + package_name + " could not be upgraded. "
+                       + colored(progress, "red"))
         else:
-            logger.info("Package " + package_name +
-                        " does not have any remotes")
+            msg = ("Package " + package_name + " does not have any remotes. "
+                   + colored(progress, "red"))
+        logger.info(msg)
     logger.info("Upgraded all possible packages.")
-    sys.exit(0)
+    exit(0)
 
 
 def list_packages():
@@ -184,7 +193,7 @@ def list_packages():
         print((package_name).ljust(25) + package_location)
     print("")
     logger.info("Succefully Listed packages.")
-    sys.exit(0)
+    exit(0)
 
 
 def move_package(package_name, end_location):
@@ -193,7 +202,7 @@ def move_package(package_name, end_location):
     # check if package is installed
     if package_name not in package_list:
         logger.error("Package not found in package list")
-        sys.exit(1)
+        exit(1)
     # run command
     package_location = package_list[package_name]["location"]
     end_location = os.path.abspath(end_location)
@@ -213,12 +222,12 @@ def open_file(file_name):
         except Exception as e:
             logger.critical("Could not open editor")
             logger.debug("Error message: " + str(e))
-            sys.exit(1)
+            exit(1)
         logger.info("File edited.")
-        sys.exit(0)
+        exit(0)
     else:
         logger.error("Editor not set, exiting")
-        sys.exit(1)
+        exit(1)
 
 
 def check():
@@ -229,13 +238,13 @@ def check():
         logger.info("Config file exists")
     else:
         logger.error("Config file not found")
-        sys.exit(1)
+        exit(1)
     packages_file = os.path.join("~", ".git-get", "packages.yml")
     if os.path.exists(os.path.expanduser(packages_file)):
         logger.info("Packages list exists")
     else:
         logger.error("Packages list not found")
-        sys.exit(1)
+        exit(1)
     # check packages
     for package_name in package_list:
         all_found = True
@@ -252,13 +261,13 @@ def check():
 def main(arguments):
     def invalid_command():
         logger.error("Invalid command: " + " ".join(arguments))
-        sys.exit(1)
+        exit(1)
     set_logger(detail_level=1)
     logger.info("Starting")
     # confirm that a command has been selected
     if len(arguments) < 1:
         logger.error("Command not supplied")
-        sys.exit(1)
+        exit(1)
     # get command and execute appropriate function
     if arguments[0] == "install":
         if arguments[1] == "local":
@@ -290,4 +299,4 @@ def main(arguments):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    main(argv[1:])

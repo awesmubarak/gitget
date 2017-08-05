@@ -1,6 +1,6 @@
 # Git-get
 
-Package manager for git repositories. Nothing is ready yet.
+Package manager for git repositories.
 
 ## Usage
 
