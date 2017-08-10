@@ -316,12 +316,51 @@ def install_local(location):
     exit(0)
 
 
-def list_packages(*args):
-    """List all packages and install locations."""
+def list_packages_caller(args):
+    """Calls list_packages() function (required for argparse).
+
+    Args:
+        Args (namespace):
+            List_filter (str) (optional): Describes filter for output.
+                - Local: Displays only local repos.
+                - Remote: Displays only remote repos.
+
+    """
+    if args.local and args.remote:
+        logger.error("Only one filter option can be selecteds")
+        exit(1)
+    if args.local:
+        list_filter = "local"
+    elif args.remote:
+        list_filter = "remote"
+    else:
+        list_filter=""
+    list_packages(list_filter=list_filter)
+
+
+def list_packages(list_filter=""):
+    """List all packages and install locations.
+
+    Args:
+        List_filter (str) (optional): Describes filter for output.
+            - Local: Displays only local repos.
+            - Remote: Displays only remote repos.
+
+    """
     package_list = get_package_list()
     justify = len(max(package_list, key=len)) + 2
-    print("Packages:")
+    #  fix formatting
+    if list_filter != "":
+        list_filter += " "
+    # print information
+    print((list_filter[0].upper() + list_filter[1:] + "packages:"))
     for package_name in package_list:
+        # filters
+        a = list_filter == "local" and not package_name.startswith("local_")
+        b = list_filter == "remote" and package_name.startswith("local_")
+        if a or b:
+            break
+        # location
         package_location = package_list[package_name]["location"]
         print("  " + (package_name).ljust(justify) + package_location)
     logger.info("Succefully Listed packages.")
@@ -478,7 +517,11 @@ def main(arguments):
 
     # list
     list_parser = subparsers.add_parser("list", help=get_help(list_packages))
-    list_parser.set_defaults(function=list_packages)
+    list_parser.add_argument("--local", action="store_true",
+                             help="display only local files")
+    list_parser.add_argument("--remote", action="store_true",
+                             help="display only remote packages")
+    list_parser.set_defaults(function=list_packages_caller)
 
     # move
     move_parser = subparsers.add_parser("move", help=get_help(move_package))

@@ -88,6 +88,12 @@ List
 
 Lists all packages and install locations.
 
+``git-get list --local``
+
+``git-get list --remote``
+
+Filters to output to only local or remote repositories.
+
 Move
 ----
 
