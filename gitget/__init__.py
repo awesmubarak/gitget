@@ -4,11 +4,6 @@
 
 Package manager for git repositories.
 
-The basic script is invoked using ``python3 git-get.py``. An alias should be
-added to your bashrc or zshrc to access the program from anywhere (will be
-changed soon). It should run on both linux and osx, but shouldn't run on
-windows. See ``README.rst`` for more information.
-
 Usage:
     git-get check
     git-get edit (packages|config)
@@ -16,10 +11,12 @@ Usage:
     git-get list
     git-get move <package_name> <end_location>
     git-get remove <package_name> --soft
+    git-get setup
     git-get upgrade
 
 Options:
     --debug  Increases verbosity of output
+
 """
 
 import argparse                # Parses command line arguments
@@ -86,7 +83,8 @@ def get_yaml(name, filename):
             config = yaml.safe_load(file)
             logger.debug("Loaded " + name)
     except FileNotFoundError:
-        logger.error(name[0].upper() + name[1:] + " not found")
+        lost_filename = name[0].upper() + name[1:]
+        logger.error(lost_filename + " not found, try running `git-get setup`")
         exit(1)
     return config
 
@@ -110,7 +108,10 @@ def get_package_list():
             package is stored locally.
 
     """
-    return get_yaml("package list", "~/.git-get/packages.yml")
+    package_list = get_yaml("package list", "~/.git-get/packages.yml")
+    if package_list is None:
+        package_list = {}
+    return package_list
 
 
 def write_package_list(package_list):
@@ -440,6 +441,49 @@ def remove(package, soft=False):
         exit(1)
 
 
+def setup_files(*args):
+    """Creates core configuration files.
+
+    Files created:
+        - config.yml
+        - packages.yml
+
+    """
+    # check if folder already exist
+    path = os.path.expanduser("~/.git-get")
+    if os.path.isdir(path):
+        logger.info("Folder `~/.git-get` exists")
+    else:
+        if os.path.exists(path):
+            logger.error("File `~/.git-get` should be a folder")
+        else:
+            logger.info("Creating folder `~/.git-get`")
+            os.makedirs(path)
+    # check for package list
+    path = os.path.expanduser("~/.git-get/packages.yml")
+    if os.path.isfile(path):
+        logger.info("Package list exists")
+    else:
+        if os.path.exists(path):
+            logger.error("Folder `~/.git-get/packages.yml` should be a file")
+        else:
+            logger.info("Creating package list")
+            with open(path, "w") as file:
+                file.write("")
+    # check for configuration file
+    path = os.path.expanduser("~/.git-get/config.yml")
+    if os.path.isfile(path):
+        logger.info("Configuration file exists")
+    else:
+        if os.path.exists(path):
+            logger.error("Folder `~/.git-get/config.yml` should be a file")
+        else:
+            logger.info("Creating configuration file")
+            with open(path, "w") as file:
+                file.write("")
+    logger.info("Created required files")
+
+
 def upgrade(*args):
     """Upgrades all possible packages.
 
@@ -476,7 +520,7 @@ def upgrade(*args):
     exit(0)
 
 
-def main(arguments):
+def main():
     """Main"""
     def get_help(function):
         """Generate help string from a function's docstring
@@ -538,6 +582,10 @@ def main(arguments):
                                help="if true the files are not deleted")
     remove_parser.set_defaults(function=remove_caller)
 
+    # setup
+    setup_parser = subparsers.add_parser("setup", help=get_help(setup_files))
+    setup_parser.set_defaults(function=setup_files)
+
     # upgrade
     upgrade_parser = subparsers.add_parser("upgrade", help=get_help(upgrade))
     upgrade_parser.set_defaults(function=upgrade)
@@ -559,4 +607,4 @@ def main(arguments):
 
 
 if __name__ == '__main__':
-    main(argv[1:])
+    main()

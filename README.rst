@@ -4,13 +4,20 @@ Git-get
 
 Package manager for git repositories.
 
+Installation
+============
+
+To install from pypi run:
+
+``sudo pip3 install git-get``
+
+It should run on both linux and maybe other unix-like oses (bsd, osx), but
+shouldn't run on windows (unless you're a cybermancer).
+
 Usage
 =====
 
-The basic script is invoked using ``python3 git-get.py``. An alias should be
-added to your bashrc or zshrc to access the program from anywhere (will be
-changed soon). It should run on both linux and osx, but shouldn't run on
-windows. The following is a list of commands available:
+The following is a list of commands available:
 
 Help
 ----
@@ -20,6 +27,13 @@ Help
 ``git-get --help``
 
 Displays a help menu.
+
+Setup
+-----
+
+``git-get setup``
+
+Sets up the core configuration files. This should be the first command run.
 
 Install
 -------
