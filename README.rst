@@ -12,7 +12,8 @@ To install from pypi run:
 ``sudo pip3 install git-get``
 
 It should run on both linux and maybe other unix-like oses (bsd, osx), but
-shouldn't run on windows (unless you're a cybermancer).
+shouldn't run on windows (unless you're a cybermancer). Git needs to be
+installed on the computer.
 
 Usage
 =====

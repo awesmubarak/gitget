@@ -19,6 +19,7 @@ Options:
 
 """
 
+
 import argparse                # Parses command line arguments
 import logging                 # Allows unified logging
 import os                      # Allows os-interface
@@ -26,7 +27,7 @@ import subprocess              # Calls and handles subprocesses
 import yaml                    # Parses and writes yaml file
 
 from termcolor import colored  # Allows unified color parsing
-from sys import exit, argv     # Exiting and command line arguments
+from sys import argv           # Command line arguments
 
 
 def set_logger(debug_level="info", detail_level=2):
@@ -55,7 +56,7 @@ def set_logger(debug_level="info", detail_level=2):
     elif detail_level == 1:
         formatter = logging.Formatter("%(asctime)s %(message)s", "%H:%M:%S")
     elif detail_level == 2:
-        formatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s",
+        formatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s"
                                       "%H:%M:%S")
     handler.setFormatter(formatter)
     # set logger verboisty
@@ -209,6 +210,7 @@ def open_file_caller(args):
     """
     open_file(args.filename)
 
+
 def open_file(filename):
     """Opens file in default editor.
 
@@ -244,7 +246,7 @@ def install_caller(args):
             Args.Package (list): Location of the package to install.
 
     """
-    package = "".join(args.package)
+    package = "".join(args.package_name)
     if args.local:
         install_local(package)
     else:
@@ -339,7 +341,7 @@ def list_packages_caller(args):
     list_packages(list_filter=list_filter)
 
 
-def list_packages(list_filter=""):
+def list_packages(list_filter=" "):
     """List all packages and install locations.
 
     Args:
@@ -351,7 +353,7 @@ def list_packages(list_filter=""):
     package_list = get_package_list()
     justify = len(max(package_list, key=len)) + 2
     #  fix formatting
-    if list_filter != "":
+    if list_filter != " ":
         list_filter += " "
     # print information
     print((list_filter[0].upper() + list_filter[1:] + "packages:"))
@@ -366,6 +368,7 @@ def list_packages(list_filter=""):
         print("  " + (package_name).ljust(justify) + package_location)
     logger.info("Succefully Listed packages.")
     exit(0)
+
 
 def move_package_caller(args):
     """Call move_package() (required for argparse).
@@ -411,7 +414,7 @@ def remove_caller(args):
             Args.soft (bool): If True local folder is not deleted.
 
     """
-    remove("".join(args.package), args.soft)
+    remove("".join(args.package_name), args.soft)
 
 
 def remove(package, soft=False):
@@ -552,7 +555,7 @@ def main():
 
     # install
     install_parser = subparsers.add_parser("install", help="installs packages")
-    install_parser.add_argument("package_name", nargs=1,
+    install_parser.add_argument("package_name",
                                 help="location of package to install")
     install_parser.add_argument("--local", action="store_true", default=False,
                                 help="specifies if the package is a locally\
@@ -608,3 +611,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
