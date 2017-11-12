@@ -41,7 +41,7 @@ Install
 
 ``git-get install <username/repository>``
 
-``git-get install abactel/git-get``
+``git-get install awesmubarak/git-get``
 
 Github repositories can be installed without typing the whole URL; the username
 of the owner and the repository name should be passed as command line
@@ -50,7 +50,7 @@ directory where called.
 
 ``git-get install <URL>``
 
-``git-get install https://gitlab.com/abactel/git-get``
+``git-get install https://gitlab.com/awesmubara/git-get``
 
 Installs a package from a non-github site. The name of the repository is saved
 
@@ -68,13 +68,13 @@ Remove
 
 ``git-get remove <username/repository>``
 
-``git-get remove abactel/git-get``
+``git-get remove awesmubarak/git-get``
 
 Removes a repository from the package list and removes the files locally.
 
 ``git-get remove <username/repository> --soft``
 
-``git-get remove abactel/git-get --soft``
+``git-get remove awesmubara/git-get --soft``
 
 Removes a repository from the package list but does not remove the files
 locally.
@@ -114,7 +114,7 @@ Move
 
 ``git-get move <username/repository> <location>``
 
-``git-get move abactel/git-get ~/stuff``
+``git-get move awesmubarak/git-get ~/stuff``
 
 Move a repository to another location.
 
