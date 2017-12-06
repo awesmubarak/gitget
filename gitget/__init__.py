@@ -283,7 +283,7 @@ def install(remote_package):
             os.getcwd(), remote_package.split("/")[-1])
         package_list[str(package_name)] = {"location": package_location}
         write_package_list(package_list)
-        logger.info("Succefully installed package.")
+        logger.info("Successfully installed package.")
         exit(0)
     else:
         logger.error("Package already installed")
@@ -315,7 +315,7 @@ def install_local(location):
     package_location = os.path.join(os.getcwd(), location)
     package_list[package] = {"location": package_location}
     write_package_list(package_list)
-    logger.info("Succefully installed package " + package + ".")
+    logger.info("Successfully installed package " + package + ".")
     exit(0)
 
 
@@ -366,7 +366,7 @@ def list_packages(list_filter=" "):
         # location
         package_location = package_list[package_name]["location"]
         print("  " + (package_name).ljust(justify) + package_location)
-    logger.info("Succefully Listed packages.")
+    logger.info("Successfully Listed packages.")
     exit(0)
 
 
@@ -434,7 +434,7 @@ def remove(package, soft=False):
             # write new package list
             del package_list[package]
             write_package_list(package_list)
-            logger.info("Succefully removed package.")
+            logger.info("Successfully removed package.")
             exit(0)
         else:
             logger.info("Quitting")
@@ -510,7 +510,7 @@ def upgrade(*args):
                 msg = ("Package " + package_name + " already up to date. "
                        + colored(progress, "yellow"))
             elif return_value == 0:
-                msg = ("Package " + package_name + " succesfully upgraded. "
+                msg = ("Package " + package_name + " successfully upgraded. "
                        + colored(progress, "green"))
             else:
                 msg = ("Package " + package_name + " could not be upgraded. "
