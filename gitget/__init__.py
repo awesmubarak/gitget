@@ -20,14 +20,14 @@ Options:
 """
 
 
-import argparse                # Parses command line arguments
-import logging                 # Allows unified logging
-import os                      # Allows os-interface
-import subprocess              # Calls and handles subprocesses
-import yaml                    # Parses and writes yaml file
+import argparse  # Parses command line arguments
+import logging  # Allows unified logging
+import os  # Allows os-interface
+import subprocess  # Calls and handles subprocesses
+import yaml  # Parses and writes yaml file
 
 from termcolor import colored  # Allows unified color parsing
-from sys import argv           # Command line arguments
+from sys import argv  # Command line arguments
 
 
 def set_logger(debug_level="info", detail_level=2):
@@ -56,8 +56,9 @@ def set_logger(debug_level="info", detail_level=2):
     elif detail_level == 1:
         formatter = logging.Formatter("%(asctime)s %(message)s", "%H:%M:%S")
     elif detail_level == 2:
-        formatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s"
-                                      "%H:%M:%S")
+        formatter = logging.Formatter(
+            "%(asctime)s %(levelname)-8s %(message)s" "%H:%M:%S"
+        )
     handler.setFormatter(formatter)
     # set logger verboisty
     if debug_level == "info":
@@ -148,8 +149,9 @@ def run_command(command, die_on_err=True, verbosity=0):
     if verbosity < 1:
         logger.debug("Running: " + command)
     # run command and store output
-    proc = subprocess.Popen(command.split(" "),
-                            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    proc = subprocess.Popen(
+        command.split(" "), stdout=subprocess.PIPE, stderr=subprocess.PIPE
+    )
     output = proc.communicate()[0].decode("utf-8")[:-1]
     exit_code = proc.returncode
     # die if required
@@ -188,8 +190,7 @@ def check(*args):
         if os.path.isdir(package_list[package_name]["location"]):
             logger.debug(colored("Pakage " + package_name + " found", "green"))
         else:
-            logger.error(
-                colored("Package " + package_name + " not found", "red"))
+            logger.error(colored("Package " + package_name + " not found", "red"))
             all_found = False
     # messages
     if all_found:
@@ -279,8 +280,7 @@ def install(remote_package):
     if package_name not in package_list:
         run_command("git clone " + remote_package)
         # add to packages list
-        package_location = os.path.join(
-            os.getcwd(), remote_package.split("/")[-1])
+        package_location = os.path.join(os.getcwd(), remote_package.split("/")[-1])
         package_list[str(package_name)] = {"location": package_location}
         write_package_list(package_list)
         logger.info("Successfully installed package.")
@@ -337,7 +337,7 @@ def list_packages_caller(args):
     elif args.remote:
         list_filter = "remote"
     else:
-        list_filter=""
+        list_filter = ""
     list_packages(list_filter=list_filter)
 
 
@@ -507,17 +507,33 @@ def upgrade(*args):
             command = base_command + "pull"
             output, return_value = run_command(command, die_on_err=False)
             if output == "Already up-to-date." and return_value == 0:
-                msg = ("Package " + package_name + " already up to date. "
-                       + colored(progress, "yellow"))
+                msg = (
+                    "Package "
+                    + package_name
+                    + " already up to date. "
+                    + colored(progress, "yellow")
+                )
             elif return_value == 0:
-                msg = ("Package " + package_name + " successfully upgraded. "
-                       + colored(progress, "green"))
+                msg = (
+                    "Package "
+                    + package_name
+                    + " successfully upgraded. "
+                    + colored(progress, "green")
+                )
             else:
-                msg = ("Package " + package_name + " could not be upgraded. "
-                       + colored(progress, "red"))
+                msg = (
+                    "Package "
+                    + package_name
+                    + " could not be upgraded. "
+                    + colored(progress, "red")
+                )
         else:
-            msg = ("Package " + package_name + " cannot be upgraded. "
-                   + colored(progress, "red"))
+            msg = (
+                "Package "
+                + package_name
+                + " cannot be upgraded. "
+                + colored(progress, "red")
+            )
         logger.info(msg)
     logger.info("Upgraded all possible packages.")
     exit(0)
@@ -525,6 +541,7 @@ def upgrade(*args):
 
 def main():
     """Main"""
+
     def get_help(function):
         """Generate help string from a function's docstring
 
@@ -540,8 +557,12 @@ def main():
     subparsers = parser.add_subparsers(title="subcommands")
 
     # debug flag
-    parser.add_argument("--debug", action="store_true", default=False,
-                        help="increases verbosity of output")
+    parser.add_argument(
+        "--debug",
+        action="store_true",
+        default=False,
+        help="increases verbosity of output",
+    )
 
     # check
     check_parser = subparsers.add_parser("check", help=get_help(check))
@@ -549,40 +570,50 @@ def main():
 
     # edit
     open_parser = subparsers.add_parser("edit", help=get_help(open_file))
-    open_parser.add_argument("filename", choices=["packages", "config"],
-                             help="name of file to edit")
+    open_parser.add_argument(
+        "filename", choices=["packages", "config"], help="name of file to edit"
+    )
     open_parser.set_defaults(function=open_file_caller)
 
     # install
     install_parser = subparsers.add_parser("install", help="installs packages")
-    install_parser.add_argument("package_name",
-                                help="location of package to install")
-    install_parser.add_argument("--local", action="store_true", default=False,
-                                help="specifies if the package is a locally\
-                                      stored file")
+    install_parser.add_argument("package_name", help="location of package to install")
+    install_parser.add_argument(
+        "--local",
+        action="store_true",
+        default=False,
+        help="specifies if the package is a locally\
+                                      stored file",
+    )
     install_parser.set_defaults(function=install_caller)
 
     # list
     list_parser = subparsers.add_parser("list", help=get_help(list_packages))
-    list_parser.add_argument("--local", action="store_true",
-                             help="display only local files")
-    list_parser.add_argument("--remote", action="store_true",
-                             help="display only remote packages")
+    list_parser.add_argument(
+        "--local", action="store_true", help="display only local files"
+    )
+    list_parser.add_argument(
+        "--remote", action="store_true", help="display only remote packages"
+    )
     list_parser.set_defaults(function=list_packages_caller)
 
     # move
     move_parser = subparsers.add_parser("move", help=get_help(move_package))
-    move_parser.add_argument("package_name", nargs=1,
-                             help="name of package to move")
+    move_parser.add_argument("package_name", nargs=1, help="name of package to move")
     move_parser.add_argument("location", nargs=1, help="location to move to")
     move_parser.set_defaults(function=move_package_caller)
 
     # remove
     remove_parser = subparsers.add_parser("remove", help=get_help(remove))
-    remove_parser.add_argument("package_name", nargs=1,
-                               help="name of package to remove")
-    remove_parser.add_argument("--soft", action="store_true", default=False,
-                               help="if true the files are not deleted")
+    remove_parser.add_argument(
+        "package_name", nargs=1, help="name of package to remove"
+    )
+    remove_parser.add_argument(
+        "--soft",
+        action="store_true",
+        default=False,
+        help="if true the files are not deleted",
+    )
     remove_parser.set_defaults(function=remove_caller)
 
     # setup
@@ -609,6 +640,5 @@ def main():
         args = parser.parse_args(["-h"])
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
-
