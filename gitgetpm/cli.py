@@ -9,7 +9,7 @@ Usage:
     git-get remove <package_name> [--soft] [options]
     git-get update [--overwrite] [options]
     git-get list [options]
-    git-get move <package_name> <end_location> [options]
+    git-get move <package_name> <location> [options]
     git-get edit [options]
     git-get doctor [options]
     git-get --version

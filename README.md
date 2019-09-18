@@ -55,6 +55,12 @@ deleted.
 
 Runs `git-pull` on all packages in the package list.
 
+### Move
+
+    gitget move <package_name> <location>
+
+Moves a package from location to another and updates the information about it.
+
 ### Doctor
 
     gitget doctor

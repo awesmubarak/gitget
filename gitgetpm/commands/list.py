@@ -11,4 +11,4 @@ class List(Base):
 
         for package_name in package_list:
             package_path = package_list[package_name]
-            print(f"{package_name}: {package_path}")
+            print(f"{package_name}\n{package_path}\n")
