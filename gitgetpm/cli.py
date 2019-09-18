@@ -17,6 +17,7 @@ Usage:
 
 Options:
     --debug    Increases verbosity of the output
+    --nocolor  Logs will not have colors in them
 
 Examples:
     git-get install awesmubarak/git-get
@@ -37,18 +38,18 @@ from loguru import logger
 from sys import stderr
 
 
-def setup_logging(debug_level):
+def setup_logging(debug_level, colorize):
     """Sets up the format for logging, based on the debug level (info/dbug)."""
     logger.remove()
 
     if debug_level == "info":
         logger_format = "<green>{time:HH:mm:ss}</green> <level>{message}</level>"
-        logger.add(stderr, colorize=True, format=logger_format, level="INFO", backtrace=False, diagnose=False)
+        logger.add(stderr, colorize=colorize, format=logger_format, level="INFO", backtrace=False, diagnose=False)
     else:
         logger_format = "<green>{time:HH:mm:ss}</green> {file: <12} <level>{level: <8} {message}</level>"
         logger.add(
             stderr,
-            colorize=True,
+            colorize=colorize,
             format=logger_format,
             level="DEBUG",
             backtrace=True,
@@ -61,10 +62,9 @@ def main():
     arguments = docopt(__doc__, version=f"Gitget {__version__}")
 
     # set up the logger
-    if arguments["--debug"]:
-        setup_logging("debug")
-    else:
-        setup_logging("info")
+    debug_level = "debug" if arguments["--debug"] else "info"
+    colorize = False if arguments["--nocolor"] else True
+    setup_logging(debug_level, colorize)
 
     # dynamically call the correct submodule (???)
     for called_command in arguments:
