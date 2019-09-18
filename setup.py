@@ -10,14 +10,17 @@ here = path.abspath(path.dirname(__file__))
 with open(path.join(here, "README.rst"), encoding="utf-8") as file:
     long_description = file.read()
 
+# Get the Version
+exec(open('gitget/version.py').read())
+
 setup(
-    name="git-get",
-    version="1.0.2",
+    name="gitget",
+    version=__version__,
     description="A package manager for git repositories.",
     long_description=long_description,
-    url="https://github.com/awesmubarak/git-get",
+    url="https://github.com/awesmubarak/gitget",
     author="Awes Mubarak",
-    author_email="awes.mubarak@awesmubarak.com",
+    author_email="contact@awesmubarak.com",
     license="MIT",
     classifiers=[
         "Development Status :: 5 - Production/Stable",
@@ -30,6 +33,6 @@ setup(
     ],
     keywords="git github package manager",
     packages=["gitget"],
-    entry_points={"console_scripts": ["git-get=gitget:main"]},
-    install_requires=["PyYAML", "termcolor"],
+    entry_points={"console_scripts": ["gitget=gitget:main"]},
+    install_requires=["docopt", "loguru", "gitpython", "pyyaml"],
 )

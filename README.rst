@@ -1,5 +1,5 @@
 =======
-Git-get
+Gitget
 =======
 
 Package manager for git repositories.
@@ -9,121 +9,77 @@ Installation
 
 To install from pypi run:
 
-``sudo pip3 install git-get``
+``sudo pip3 install gitget``
 
-It should run on both linux and maybe other unix-like oses (bsd, osx), but
-shouldn't run on windows (unless you're a cybermancer). Git needs to be
-installed on the computer.
+Then create the file ``.gitget.yaml`` in your home directory.
 
 Usage
 =====
 
-The following is a list of commands available:
+This program is useful for people that tend to download a lot of repositories
+from github to simply use as software and want to manage these repositories.
+Github repositories are treated like software 'packages', and basic tasks such
+as downloading and saving information about repositories, updating repository,
+and removing them once they aren't needed anymore. The contents of the git
+repositories is not changed; installation scripts are not run and dependencies
+are not installed (yet).
 
 Help
 ----
 
-``git-get -h``
+``gitget -h``
 
-``git-get --help``
+``gitget --help``
 
 Displays a help menu.
-
-Setup
------
-
-``git-get setup``
-
-Sets up the core configuration files. This should be the first command run.
 
 Install
 -------
 
-``git-get install <username/repository>``
+``gitget install <package>``
 
-``git-get install awesmubarak/git-get``
+``gitget install <package>' '<package_name>'``
 
-Github repositories can be installed without typing the whole URL; the username
-of the owner and the repository name should be passed as command line
-arguments, separated by a forward slash. The repository will be download to the
-directory where called.
-
-``git-get install <URL>``
-
-``git-get install https://gitlab.com/awesmubara/git-get``
-
-Installs a package from a non-github site. The name of the repository is saved
-
-``git-get install <directory> --local``
-
-``git-get install git-get-patch --local``
-
-Add local file to package list. The file will not be saved by appending the
-folder name to "local_", e.g the above example would result in "local_git-get".
-More than one package with the same name can be added, subsequent packages will
-have a number appended ("local_git-get_1")
+Downloads a repository from github and saves information about it. Optionally,
+a name for the package can be specified. This name will also be used as the
+directory name. Otherwise, the package name is set to ``username/repository``.
 
 Remove
 ------
 
-``git-get remove <username/repository>``
+``gitget remove <repository_name>``
+``gitget remove <repository_name> --soft``
 
-``git-get remove awesmubarak/git-get``
-
-Removes a repository from the package list and removes the files locally.
-
-``git-get remove <username/repository> --soft``
-
-``git-get remove awesmubara/git-get --soft``
-
-Removes a repository from the package list but does not remove the files
-locally.
+Removes a repository from the package list and also deletes the files locally.
+If the ``--soft`` flag is passed, the local files will not be deleted.
 
 Upgrade
 -------
 
-``git-get upgrade``
+``gitget update``
 
-Runs ``git-pull`` on all packages in the package list, to upgrade them.
+Runs ``git-pull`` on all packages in the package list.
 
-Check
+Doctor
 -----
 
-``git-get check``
+``gitget doctor``
 
-Verifies integrity of files and packages. First, the core files are checked
-for. Both the configuration and the package list are looked for. If both are
-found the packages list is parsed and the location of every package is
-verified.
+Verifies integrity of files and packages. Any errors are then reported and need
+to be fixed.
 
 List
 ----
 
-``git-get list``
+``gitget list``
 
 Lists all packages and install locations.
-
-``git-get list --local``
-
-``git-get list --remote``
-
-Filters to output to only local or remote repositories.
-
-Move
-----
-
-``git-get move <username/repository> <location>``
-
-``git-get move awesmubarak/git-get ~/stuff``
-
-Move a repository to another location.
 
 Edit
 ----
 
-``git-get edit packages``
+``gitget edit packages``
 
-``git-get edit config``
+``gitget edit config``
 
-The default system editor (run ``echo $EDITOR``) is used to open the packages
-list or configuration file. This allows manual fixing of errors.
+Opens the default editor (run ``echo $EDITOR``) to edit the package file.
