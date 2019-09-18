@@ -9,7 +9,7 @@ Installation
 
 To install from pypi run:
 
-``sudo pip3 install gitget``
+``sudo pip3 install gitgetpm``
 
 Then create the file ``.gitget.yaml`` in your home directory.
 
@@ -61,7 +61,7 @@ Upgrade
 Runs ``git-pull`` on all packages in the package list.
 
 Doctor
------
+------
 
 ``gitget doctor``
 

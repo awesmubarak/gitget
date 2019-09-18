@@ -31,7 +31,7 @@ Help:
 
 from .version import __version__
 from docopt import docopt
-from gitget import commands
+from gitgetpm import commands
 from inspect import getmembers, isclass
 from loguru import logger
 from sys import stderr
@@ -55,7 +55,7 @@ def setup_logging(debug_level):
 
 def main():
     # setup the argument parser with the docstring and imported version number
-    arguments = docopt(__doc__, version=__version__)
+    arguments = docopt(__doc__, version=f"Gitget {__version__}")
 
     # set up the logger
     if arguments["--debug"]:
