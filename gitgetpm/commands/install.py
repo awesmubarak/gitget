@@ -1,9 +1,8 @@
 from .base import Base
+from git import Repo
 from loguru import logger
 from os import getcwd, path
-
-from git import Repo
-
+import http.client as httplib
 
 class Install(Base):
     """Downloads a repository from github and saves information about it."""
@@ -39,9 +38,28 @@ class Install(Base):
             logger.error(f"Directory already exists: {package_location}")
             exit(1)
 
+        # check if the repository can be reached
+        trimmed_package_url = package_url.replace("https://","").replace("http://","")
+        trimmed_package_url = trimmed_package_url.split("/")[0]
+        logger.debug("Checking internet connection")
+        connection = httplib.HTTPConnection(trimmed_package_url, timeout=5)
+        try:
+            connection.request("HEAD", "/")
+            connection.close()
+            logger.debug("Connection made succesfully")
+        except:
+            connection.close()
+            logger.exception("Could not connect to the URL, check the URL and your internet")
+            exit(1)
+
+
         # clone repository
         logger.info(f"Cloning repository {package_name}")
-        Repo.clone_from(package_url, package_location)
+        try:
+            Repo.clone_from(package_url, package_location)
+        except:
+            logger.exception("Could not clone the repository")
+            exit(1)
         logger.debug("Clone successfull")
 
         # add package to package list

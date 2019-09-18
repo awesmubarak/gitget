@@ -43,14 +43,17 @@ def setup_logging(debug_level):
 
     if debug_level == "info":
         logger_format = "<green>{time:HH:mm:ss}</green> <level>{message}</level>"
-        logger_threshold = "INFO"
-    elif debug_level == "debug":
-        logger_format = "<green>{time:HH:mm:ss}</green> {file: <12} <level>{level: <8} {message}</level>"
-        logger_threshold = "DEBUG"
+        logger.add(stderr, colorize=True, format=logger_format, level="INFO", backtrace=False, diagnose=False)
     else:
-        raise ValueError(f"Not a valid debug level {debug_level}")
-
-    logger.add(stderr, colorize=True, format=logger_format, level=logger_threshold)
+        logger_format = "<green>{time:HH:mm:ss}</green> {file: <12} <level>{level: <8} {message}</level>"
+        logger.add(
+            stderr,
+            colorize=True,
+            format=logger_format,
+            level="DEBUG",
+            backtrace=True,
+            diagnose=True,
+        )
 
 
 def main():

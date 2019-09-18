@@ -38,6 +38,9 @@ class Remove(Base):
         ):
             logging.info("Exiting")
             exit(0)
-        logger.info("Deleting files")
 
-        rmtree(package_location)
+        logger.info("Deleting files")
+        try:
+            rmtree(package_location)
+        except:
+            exception("Could not delete the files")

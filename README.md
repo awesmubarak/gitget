@@ -43,11 +43,11 @@ be used as the directory name. Otherwise, the package name is set to
 
 ### Remove
 
-    gitget remove <repository_name>` `gitget remove <repository_name> --soft
+    gitget remove <repository_name>
+    gitget remove <repository_name> --soft
 
-Removes a repository from the package list and also deletes the files
-locally. If the `--soft` flag is passed, the local files will not be
-deleted.
+Removes a repository from the package list and also deletes the files locally.
+If the `--soft` flag is passed, the local files will not be deleted.
 
 ### Upgrade
 

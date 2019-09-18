@@ -25,16 +25,24 @@ class Base(object):
     def get_package_list(*args):
         """Returns the extracted yaml data from the package file."""
         logger.debug("Loading package list")
-        with open(Base.get_package_list_filepath()) as file:
-            package_list = yaml.safe_load(file)
+        try:
+            with open(Base.get_package_list_filepath()) as file:
+                package_list = yaml.safe_load(file)
+        except:
+            logger.exception("Could not load package list")
+            exit(1)
         logger.debug("Package list loaded")
         return package_list
 
     def write_package_list(_, package_list, *args):
         """Writes the package information the package file."""
         logger.debug("Writing package list")
-        with open(Base.get_package_list_filepath(), "w") as file:
-            yaml.dump(package_list, file, sort_keys=True)
+        try:
+            with open(Base.get_package_list_filepath(), "w") as file:
+                yaml.dump(package_list, file, sort_keys=True)
+        except:
+            logger.excpetion("Could not write package list")
+            exit(1)
         logger.debug("Packages written to file")
 
     def check_package_list_file(package_list_path, *args):
