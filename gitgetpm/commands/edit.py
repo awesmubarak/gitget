@@ -5,7 +5,15 @@ import subprocess, os, platform
 
 
 class Edit(Base):
-    """Opens the default editor to edit the package file."""
+    """Edit.
+
+    Opens the default editor (run `echo $EDITOR`) to edit the package file.
+
+    Usage: gitget edit [global options]
+
+    Examples:
+        gitget edit
+    """
 
     def run(self):
         filepath = self.get_package_list_filepath()

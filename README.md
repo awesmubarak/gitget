@@ -28,8 +28,10 @@ installed (yet).
 
     gitget -h
     gitget --help
+    gitget help <command>
 
-Displays a help menu.
+Displays a help menu. If the `help` command is used, a help menu for a specific
+command is displayed.
 
 ### Install
 
@@ -49,11 +51,11 @@ be used as the directory name. Otherwise, the package name is set to
 Removes a repository from the package list and also deletes the files locally.
 If the `--soft` flag is passed, the local files will not be deleted.
 
-### Upgrade
+### Update
 
     gitget update
 
-Runs `git-pull` on all packages in the package list.
+Runs `git-pull` on all packages in the package list to update them.
 
 ### Move
 
@@ -76,7 +78,6 @@ Lists all packages and install locations.
 
 ### Edit
 
-    gitget edit packages
-    gitget edit config
+    gitget edit
 
 Opens the default editor (run `echo $EDITOR`) to edit the package file.

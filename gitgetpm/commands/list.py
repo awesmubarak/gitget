@@ -3,7 +3,15 @@ from loguru import logger
 
 
 class List(Base):
-    """List the packages installed."""
+    """List.
+
+    Lists all packages and install locations.
+
+    Usage: gitget list [global options]
+
+    Examples:
+        gitget list
+    """
 
     def run(self):
 

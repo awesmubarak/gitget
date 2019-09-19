@@ -1,12 +1,19 @@
 from .base import Base
 from loguru import logger
 from os import getcwd
-
 import git
 
 
 class Update(Base):
-    """update!"""
+    """Update.
+
+    Runs `git-pull` on all packages in the package list to update them.
+
+    Usage: gitget update [global options]
+
+    Examples:
+        gitget update
+    """
 
     def run(self):
         package_list = self.get_package_list()
@@ -20,5 +27,5 @@ class Update(Base):
                 logger.info(f"Updating {package_name}")
                 origins.pull()
                 logger.debug("Package updated successfully")
-            except Exception as e:
-                logger.error(f"Package {package_name} could not be updated")
+            except Exception:
+                logger.exception(f"Package {package_name} could not be updated")

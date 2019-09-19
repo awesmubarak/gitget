@@ -5,7 +5,16 @@ from shutil import move as mmove # can't be called move, causes issues
 
 
 class Move(Base):
-    """Moves a package from one location to another."""
+    """Move.
+
+    Moves a package from location to another and updates the information about
+    it.
+
+    Usage: gitget move <package_name> <location> [global options]
+
+    Examples:
+        gitget move 'awesmubarak/gitget' ..
+    """
 
     def run(self):
         package_list = self.get_package_list()

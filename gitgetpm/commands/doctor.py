@@ -5,7 +5,16 @@ from os import path
 
 
 class Doctor(Base):
-    """Verify the integrity of the package file and each package in the list."""
+    """Doctor.
+
+    Verifies integrity of files and packages. Any errors are then reported
+    and need to be fixed.
+
+    Usage: gitget doctor [global options]
+
+    Examples:
+        gitget doctor
+    """
 
     def run(self):
         # Check if package file exists

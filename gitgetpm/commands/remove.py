@@ -5,7 +5,20 @@ from shutil import rmtree
 
 
 class Remove(Base):
-    """Removes a repository from the package list and may delete the files locally."""
+    """Remove
+
+    Removes a repository from the package list and also deletes the files
+    locally.
+
+    Usage: gitget remove <package_name> [options] [global options]
+
+    Options:
+        --soft  Local files will not be deleted
+
+    Examples:
+        gitget remove awesmubarak/gitget
+        gitget remove awesmubarak/gitget --soft
+    """
 
     def run(self):
         package_list = self.get_package_list()

@@ -4,8 +4,21 @@ from loguru import logger
 from os import getcwd, path
 import http.client as httplib
 
+
 class Install(Base):
-    """Downloads a repository from github and saves information about it."""
+    """Install.
+
+    Downloads a repository from github and saves information about it.
+    Optionally, a name for the package can be specified. This name will also
+    be used as the directory name. Otherwise, the package name is set to
+    `username/repository`.
+
+    Usage: gitget install <package_url> [<package_name>] [global options]
+
+    Examples:
+        gitget install 'https://github.com/awesmubarak/gitget'
+        gitget install 'https://github.com/awesmubarak/gitget' 'gitget-download'
+    """
 
     def run(self):
         package_list = self.get_package_list()
@@ -39,7 +52,7 @@ class Install(Base):
             exit(1)
 
         # check if the repository can be reached
-        trimmed_package_url = package_url.replace("https://","").replace("http://","")
+        trimmed_package_url = package_url.replace("https://", "").replace("http://", "")
         trimmed_package_url = trimmed_package_url.split("/")[0]
         logger.debug("Checking internet connection")
         connection = httplib.HTTPConnection(trimmed_package_url, timeout=5)
@@ -49,9 +62,10 @@ class Install(Base):
             logger.debug("Connection made succesfully")
         except:
             connection.close()
-            logger.exception("Could not connect to the URL, check the URL and your internet")
+            logger.exception(
+                "Could not connect to the URL, check the URL and your internet"
+            )
             exit(1)
-
 
         # clone repository
         logger.info(f"Cloning repository {package_name}")

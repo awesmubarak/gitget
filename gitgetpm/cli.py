@@ -1,28 +1,29 @@
 #!/usr/bin/env python3
 
-"""Git-get.
+"""Gitget.
 
 Package manager for git repositories.
 
 Usage:
-    git-get install <package_url> [<package_name>] [options]
-    git-get remove <package_name> [--soft] [options]
-    git-get update [--overwrite] [options]
-    git-get list [options]
-    git-get move <package_name> <location> [options]
-    git-get edit [options]
-    git-get doctor [options]
-    git-get --version
-    git-get -h | --help
+    gitget install <package_url> [<package_name>] [options]
+    gitget remove <package_name> [--soft] [options]
+    gitget update [options]
+    gitget move <package_name> <location> [options]
+    gitget list [options]
+    gitget edit [options]
+    gitget doctor [options]
+    gitget help <command>
+    gitget -h | --help
+    gitget --version
 
-Options:
+Global options:
     --debug    Increases verbosity of the output
     --nocolor  Logs will not have colors in them
 
 Examples:
-    git-get install awesmubarak/git-get
-    git-get upgrade
-    git-get remove awesmubarak/git-get
+    gitget install awesmubarak/git-get
+    gitget update
+    gitget remove awesmubarak/git-get
 
 Help:
     For help using this tool, please open an issue on the Github repository:
@@ -66,7 +67,7 @@ def main():
     colorize = False if arguments["--nocolor"] else True
     setup_logging(debug_level, colorize)
 
-    # dynamically call the correct submodule (???)
+    # dynamically call the correct submodule or print help menu
     for called_command in arguments:
         if arguments[called_command] and hasattr(commands, called_command):
             module = getattr(commands, called_command)
