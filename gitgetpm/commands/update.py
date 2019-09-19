@@ -2,6 +2,7 @@ from .base import Base
 from loguru import logger
 from os import getcwd
 import git
+from .updateprogress import UpdateProgress
 
 
 class Update(Base):
@@ -17,15 +18,21 @@ class Update(Base):
 
     def run(self):
         package_list = self.get_package_list()
+        number_of_packages = len(package_list)
 
-        for package_name in package_list:
+        if number_of_packages == 0:
+            logger.info("No packages to update")
+            exit(0)
+
+        for package_number, package_name in enumerate(package_list):
             package_path = package_list[package_name]
 
             try:
                 repo = git.Repo(package_path)
                 origins = repo.remotes.origin
-                logger.info(f"Updating {package_name}")
-                origins.pull()
+                progress = f"[{package_number+1}/{number_of_packages}]"
+                logger.info(f"Updating {package_name}  {progress}")
+                origins.pull(progress=UpdateProgress())
                 logger.debug("Package updated successfully")
             except Exception:
                 logger.exception(f"Package {package_name} could not be updated")

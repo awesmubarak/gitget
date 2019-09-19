@@ -3,6 +3,7 @@ from git import Repo
 from loguru import logger
 from os import getcwd, path
 import http.client as httplib
+from .updateprogress import UpdateProgress
 
 
 class Install(Base):
@@ -70,10 +71,11 @@ class Install(Base):
         # clone repository
         logger.info(f"Cloning repository {package_name}")
         try:
-            Repo.clone_from(package_url, package_location)
+            Repo.clone_from(package_url, package_location, progress=UpdateProgress())
         except:
             logger.exception("Could not clone the repository")
             exit(1)
+        UpdateProgress.clear_line()
         logger.debug("Clone successfull")
 
         # add package to package list

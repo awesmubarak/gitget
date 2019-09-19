@@ -45,7 +45,14 @@ def setup_logging(debug_level, colorize):
 
     if debug_level == "info":
         logger_format = "<green>{time:HH:mm:ss}</green> <level>{message}</level>"
-        logger.add(stderr, colorize=colorize, format=logger_format, level="INFO", backtrace=False, diagnose=False)
+        logger.add(
+            stderr,
+            colorize=colorize,
+            format=logger_format,
+            level="INFO",
+            backtrace=False,
+            diagnose=False,
+        )
     else:
         logger_format = "<green>{time:HH:mm:ss}</green> {file: <12} <level>{level: <8} {message}</level>"
         logger.add(
