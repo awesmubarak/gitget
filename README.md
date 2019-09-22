@@ -2,6 +2,8 @@
 
 Package manager for git repositories.
 
+[![asciicast](https://asciinema.org/a/270298.svg)](https://asciinema.org/a/270298)
+
 ## Installation
 
 To install from pypi run:
