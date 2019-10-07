@@ -10,7 +10,7 @@ To install from pypi run:
 
 
 ```sh
-sudo pip3 install gitgetpm
+pip3 install gitget-pm
 ```
 
 Then create the file `.gitget.yaml` in your home directory.
