@@ -25,11 +25,12 @@ class Base(object):
     def get_package_list(*args):
         """Returns the extracted yaml data from the package file."""
         logger.debug("Loading package list")
+        package_list_filepath = Base.get_package_list_filepath()
         try:
-            with open(Base.get_package_list_filepath()) as file:
+            with open(package_list_filepath) as file:
                 package_list = yaml.safe_load(file)
         except:
-            logger.exception("Could not load package list")
+            logger.error("Could not load package list")
             exit(1)
         logger.debug("Package list loaded")
         return package_list
