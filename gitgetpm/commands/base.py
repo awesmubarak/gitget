@@ -33,6 +33,9 @@ class Base(object):
             logger.error("Could not load package list")
             exit(1)
         logger.debug("Package list loaded")
+        if package_list is None:
+            package_list = {}
+            logger.debug("Package list has no content, set to empty dict")
         return package_list
 
     def write_package_list(_, package_list, *args):
