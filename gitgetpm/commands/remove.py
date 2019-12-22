@@ -1,6 +1,7 @@
 from .base import Base
-from loguru import logger
+from distutils.util import strtobool
 from git import Repo
+from loguru import logger
 from shutil import rmtree
 
 
@@ -31,26 +32,36 @@ class Remove(Base):
             exit(1)
         else:
             logger.debug("Package in package list")
+        package_location = package_list[package_name]
+
+        # conifrm deleting files if asked to do so
+        if not soft_remove:
+            # prompt user wether to delete or not
+            delete_prompt_input = input(
+                f"Are you sure you want to delete {package_location}? [y/N]"
+            )
+            # try to convert to a true/false value, except invalid responses
+            try:
+                delete_file = strtobool(delete_prompt_input)
+            except ValueError:
+                logger.error("Not a valid response")
+                exit(1)
+            # respnse
+            if delete_file:
+                logger.debug("Going ahead with deletion")
+            else:
+                logger.info("Exiting")
+                exit(0)
 
         # remove package from package list
-        package_location = package_list[package_name]
         package_list.pop(package_name, None)
         self.write_package_list(package_list)
         logger.info("Saved package information")
 
-        # delete the package
+        # delete the files
         if soft_remove:
             logger.debug("Soft remove - not deleting files")
-            return
-
-        if (
-            input(
-                f"Are you sure you want to delete every file in {package_location}? [yes/NO]"
-            )
-            != "yes"
-        ):
-            logging.info("Exiting")
-            exit(0)
+            return 0
 
         logger.info("Deleting files")
         try:
