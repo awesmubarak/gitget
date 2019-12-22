@@ -1,5 +1,6 @@
 from .base import Base
 from loguru import logger
+from tabulate import tabulate
 
 
 class List(Base):
@@ -22,6 +23,11 @@ class List(Base):
             logger.info("Package list is empty")
             return 0
 
-        for package_name in package_list:
-            package_path = package_list[package_name]
-            print(f"{package_name}\n{package_path}\n")
+        # create the table, trimming each section
+        table = []
+        for package_name, package_location in package_list.items():
+            table.append([package_name, package_location])
+
+        number_str = f"{len(package_list)} packages:"
+        table = tabulate(table, headers=['Package name','Location'])
+        logger.info(f"{number_str}\n\n{table}\n")

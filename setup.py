@@ -35,5 +35,5 @@ setup(
     keywords="git github package manager",
     packages=["gitgetpm"],
     entry_points={"console_scripts": ["gitget=gitgetpm:main"]},
-    install_requires=["docopt", "loguru", "gitpython", "pyyaml"],
+    install_requires=["docopt", "loguru", "gitpython", "pyyaml", "tabulate"],
 )
