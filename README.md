@@ -17,14 +17,12 @@ Then create the file `.gitget.yaml` in your home directory.
 
 ## Usage
 
-This program is useful for people that tend to download a lot of
-repositories from github to simply use as software and want to manage
-these repositories. Github repositories are treated like software
-'packages', and basic tasks such as downloading and saving information
-about repositories, updating repository, and removing them once they
-aren't needed anymore. The contents of the git repositories is not
-changed; installation scripts are not run and dependencies are not
-installed (yet).
+Gitget allows you to manage repositories download from git hosts like github or
+gitlab. The repositories are treated like software 'packages', and basic tasks
+such as downloading and saving information about repositories, updating
+repository, and removing them once they aren't needed anymore. The contents of
+the git repositories is not changed; installation scripts are not run and
+dependencies are not installed (yet).
 
 ### Help
 
