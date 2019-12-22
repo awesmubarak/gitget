@@ -9,7 +9,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- The package file is now `.gitget_packages.yaml` instead of `.gitget.yaml`
 - `remove` now confirms file deletion before changing the package list
 - `remove` accepts many more inputs for yes/no
 - `change`'s output is now a nice table
