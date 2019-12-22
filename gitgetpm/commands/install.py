@@ -28,12 +28,14 @@ class Install(Base):
 
         # sort out package name
         if self.options["<package_name>"] is not None:
+            # use argument
             logger.debug("Using the name provided as argument")
             package_name = self.options["<package_name>"]
             directory_name = package_name
         else:
+            # use the last part of the url
             logger.debug("Using the URL to generate a name")
-            package_name = "/".join(package_url.split("/")[-2:])
+            package_name = "_".join(package_url.split("/")[-2:])
 
         # check if the package is in the package list already
         if package_name in package_list:
