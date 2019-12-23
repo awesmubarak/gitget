@@ -1,4 +1,4 @@
-from .base import Base
+from ._base import Base
 from loguru import logger
 from yaml import safe_load
 from os import path

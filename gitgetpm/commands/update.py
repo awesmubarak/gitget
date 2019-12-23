@@ -1,8 +1,8 @@
-from .base import Base
+from ._base import Base
 from loguru import logger
 from os import getcwd
 import git
-from .updateprogress import UpdateProgress
+from ._updateprogress import UpdateProgress
 
 
 class Update(Base):

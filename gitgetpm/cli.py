@@ -31,9 +31,9 @@ Help:
 
 """
 
+from . import commands
 from .version import __version__
 from docopt import docopt
-from gitgetpm import commands
 from inspect import getmembers, isclass
 from loguru import logger
 from sys import stderr
@@ -74,16 +74,23 @@ def main():
     colorize = False if arguments["--nocolor"] else True
     setup_logging(debug_level, colorize)
 
-    # dynamically call the correct submodule or print help menu
-    for called_command in arguments:
-        if arguments[called_command] and hasattr(commands, called_command):
-            module = getattr(commands, called_command)
-            module_commands = getmembers(module, isclass)
-            command = [
-                command[1] for command in module_commands if command[0] != "Base"
-            ][0]
-            command = command(arguments)
-            command.run()
+    # call the right command, based on the argument
+    if arguments["doctor"]:
+        commands.doctor.Doctor(arguments).run()
+    elif arguments["edit"]:
+        commands.edit.Edit(arguments).run()
+    elif arguments["help"]:
+        commands.help.Help(arguments).run()
+    elif arguments["install"]:
+        commands.install.Install(arguments).run()
+    elif arguments["list"]:
+        commands.list.List(arguments).run()
+    elif arguments["move"]:
+        commands.move.Move(arguments).run()
+    elif arguments["remove"]:
+        commands.remove.Remove(arguments).run()
+    elif arguments["update"]:
+        commands.update.Update(arguments).run()
 
 
 if __name__ == "__main__":

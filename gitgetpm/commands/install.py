@@ -1,9 +1,9 @@
-from .base import Base
+from ._base import Base
 from git import Repo
 from loguru import logger
 from os import getcwd, path
 import http.client as httplib
-from .updateprogress import UpdateProgress
+from ._updateprogress import UpdateProgress
 
 
 class Install(Base):

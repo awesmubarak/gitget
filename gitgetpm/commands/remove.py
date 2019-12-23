@@ -1,4 +1,4 @@
-from .base import Base
+from ._base import Base
 from distutils.util import strtobool
 from git import Repo
 from loguru import logger

@@ -1,4 +1,4 @@
-from .base import Base
+from ._base import Base
 from loguru import logger
 from os import path
 from shutil import move as mmove # can't be called move, causes issues

@@ -11,14 +11,14 @@ with open(path.join(here, "README.md"), encoding="utf-8") as file:
     long_description = file.read()
 
 # Get the Version
-exec(open('gitgetpm/version.py').read())
+exec(open("gitgetpm/version.py").read())
 
 setup(
     name="gitget-pm",
     version=__version__,
     description="A package manager for git repositories.",
     long_description=long_description,
-    long_description_content_type='text/markdown',
+    long_description_content_type="text/markdown",
     url="https://github.com/awesmubarak/gitget",
     author="Awes Mubarak",
     author_email="contact@awesmubarak.com",
@@ -33,7 +33,7 @@ setup(
         "Programming Language :: Python",
     ],
     keywords="git github package manager",
-    packages=["gitgetpm"],
+    packages=["gitgetpm", "gitgetpm.commands"],
     entry_points={"console_scripts": ["gitget=gitgetpm:main"]},
     install_requires=["docopt", "loguru", "gitpython", "pyyaml", "tabulate"],
 )
