@@ -13,8 +13,6 @@ To install from pypi run:
 pip3 install gitget-pm
 ```
 
-Then create the file `.gitget.yaml` in your home directory.
-
 ## Usage
 
 Gitget allows you to manage repositories download from git hosts like github or
@@ -81,3 +79,10 @@ Lists all packages and install locations.
     gitget edit
 
 Opens the default editor (run `echo $EDITOR`) to edit the package file.
+
+### Setup
+
+    gitget setup
+
+Creates the `.gitget.yaml` package file, where all the package information is
+saved.

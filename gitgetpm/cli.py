@@ -12,6 +12,7 @@ Usage:
     gitget list [options]
     gitget edit [options]
     gitget doctor [options]
+    gitget setup [options]
     gitget help <command>
     gitget -h | --help
     gitget --version
@@ -21,6 +22,7 @@ Global options:
     --nocolor  Logs will not have colors in them
 
 Examples:
+    gitget setup
     gitget install awesmubarak/git-get
     gitget update
     gitget remove awesmubarak/git-get
@@ -89,6 +91,8 @@ def main():
         commands.move.Move(arguments).run()
     elif arguments["remove"]:
         commands.remove.Remove(arguments).run()
+    elif arguments["setup"]:
+        commands.setup.Setup(arguments).run()
     elif arguments["update"]:
         commands.update.Update(arguments).run()
 
