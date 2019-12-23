@@ -21,6 +21,7 @@ class Setup(Base):
             package_list_path=package_list_path
         )
 
+        logger.debug("Verifying package file status")
         if package_file_status == 1:
             logger.debug("Package file `.gitget.yaml` missing in home directory")
         elif package_file_status == 2:
@@ -33,6 +34,7 @@ class Setup(Base):
             exit(1)
 
         # create the file
+        logger.debug("Creating file")
         with open(package_list_path, "w") as file:
             file.write("")
         logger.info("Created package file `gitget.yaml` in home directory")

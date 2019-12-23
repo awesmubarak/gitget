@@ -65,6 +65,7 @@ def setup_logging(debug_level, colorize):
             backtrace=True,
             diagnose=True,
         )
+    logger.debug("Set up logging")
 
 
 def main():
@@ -77,6 +78,7 @@ def main():
     setup_logging(debug_level, colorize)
 
     # call the right command, based on the argument
+    logger.debug("Calling the function based on the command sent")
     if arguments["doctor"]:
         commands.doctor.Doctor(arguments).run()
     elif arguments["edit"]:

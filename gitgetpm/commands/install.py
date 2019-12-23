@@ -27,6 +27,7 @@ class Install(Base):
         directory_name = ""
 
         # sort out package name
+        logger.debug("Deciding on package name")
         if self.options["<package_name>"] is not None:
             # use argument
             logger.debug("Using the name provided as argument")
@@ -38,26 +39,31 @@ class Install(Base):
             package_name = "_".join(package_url.split("/")[-2:])
 
         # check if the package is in the package list already
+        logger.debug("Checking if the package name already exists")
         if package_name in package_list:
             logger.error(f"Package name {package_name} already exists")
             exit(1)
         logger.info(f"Using package name {package_name}")
 
         # figure out the package location
+        logger.debug("Deciding package location")
         if directory_name == "":
             package_location = f"{getcwd()}/{package_url.split('/')[-1]}"
+            logger.debug("Using the name of the package for directory name")
         else:
             package_location = f"{getcwd()}/{directory_name}"
+            logger.debug("Using the argument's specified name for directory name")
 
         # check if directory already exists
+        logger.debug("Checking if the directory name already exists")
         if path.isdir(package_location):
             logger.error(f"Directory already exists: {package_location}")
             exit(1)
 
         # check if the repository can be reached
+        logger.debug("Checking if repository can be reached")
         trimmed_package_url = package_url.replace("https://", "").replace("http://", "")
         trimmed_package_url = trimmed_package_url.split("/")[0]
-        logger.debug("Checking internet connection")
         connection = httplib.HTTPConnection(trimmed_package_url, timeout=5)
         try:
             connection.request("HEAD", "/")
@@ -81,6 +87,7 @@ class Install(Base):
         logger.debug("Clone successfull")
 
         # add package to package list
+        logger.debug("Adding package to package list")
         package_list[package_name] = package_location
         self.write_package_list(package_list)
         logger.info("Saved package information")

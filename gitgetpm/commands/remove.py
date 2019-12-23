@@ -27,6 +27,7 @@ class Remove(Base):
         soft_remove = self.options["--soft"]
 
         # check if package exists
+        logging.debug("Checking if package in package list")
         if not package_name in package_list:
             logger.error("Package name not in package list")
             exit(1)
@@ -36,6 +37,7 @@ class Remove(Base):
 
         # conifrm deleting files if asked to do so
         if not soft_remove:
+            logging.debug("Making sure user wants to delete the files")
             # prompt user wether to delete or not
             delete_prompt_input = input(
                 f"Are you sure you want to delete {package_location}? [y/N]"
@@ -46,7 +48,7 @@ class Remove(Base):
             except ValueError:
                 logger.error("Not a valid response")
                 exit(1)
-            # respnse
+            # handling response
             if delete_file:
                 logger.debug("Going ahead with deletion")
             else:
@@ -54,17 +56,18 @@ class Remove(Base):
                 exit(0)
 
         # remove package from package list
+        logging.debug("Updating package list")
         package_list.pop(package_name, None)
         self.write_package_list(package_list)
         logger.info("Saved package information")
 
         # delete the files
         if soft_remove:
-            logger.debug("Soft remove - not deleting files")
-            return 0
+            logger.debug("Soft remove so not deleting files")
+            exit(0)
 
         logger.info("Deleting files")
         try:
             rmtree(package_location)
         except:
-            exception("Could not delete the files")
+            logger.exception("Could not delete the files")

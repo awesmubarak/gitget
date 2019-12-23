@@ -19,6 +19,7 @@ class Base(object):
         logger.debug("Getting the package file filepath")
         user = path.expanduser("~")
         filepath = f"{user}/.gitget.yaml"
+        logger.debug("Filepath found")
         return filepath
 
     @staticmethod
@@ -30,9 +31,11 @@ class Base(object):
             1: not found
             2: a folder instead of a file
         """
+        logger.debug("Checking file status")
         path_exists = path.exists(package_list_path)
         path_is_dir = path.isdir(package_list_path)
 
+        logger.debug("File status found, returning vlaue")
         if not path_exists:
             return 1
         elif path_exists and path_is_dir:
@@ -46,6 +49,7 @@ class Base(object):
         package_list_filepath = Base.get_package_list_filepath()
 
         # check package list file is valid
+        logger.debug("Checking filepath")
         package_list_file_valid = Base.check_package_list_file(package_list_filepath)
         if package_list_file_valid == 1:
             logger.error("Package file missing, please run `gitget setup`")
@@ -59,6 +63,7 @@ class Base(object):
             logger.debug("Package file found")
 
         # try loading the file
+        logger.debug("Attempting to load file")
         try:
             with open(package_list_filepath) as file:
                 package_list = yaml.safe_load(file)
@@ -68,6 +73,7 @@ class Base(object):
         logger.debug("Package list loaded")
 
         # if the list is NONE, set to an empty dictionary to prevent iteration errors
+        logger.debug("Checking if package list is None")
         if package_list is None:
             package_list = {}
             logger.debug("Package list has no content, set to empty dict")
@@ -75,7 +81,7 @@ class Base(object):
 
     def write_package_list(_, package_list, *args):
         """Writes the package information to the package file."""
-        logger.debug("Writing package list")
+        logger.debug("Attempting to write package list")
         try:
             with open(Base.get_package_list_filepath(), "w") as file:
                 yaml.dump(package_list, file, sort_keys=True)

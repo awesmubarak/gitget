@@ -19,7 +19,7 @@ class Doctor(Base):
     def run(self):
         # Check if package file exists
         logger.debug("Checking if package file exists")
-        package_list_path = self.get_package_list_filepath() # checks automaticcaly
+        package_list_path = self.get_package_list_filepath()  # checks automaticcaly
         logger.info("Package file found")
 
         # Verify that the file is valid yaml
@@ -52,4 +52,4 @@ class Doctor(Base):
         if all_packages_valid:
             logger.info("All packages are valid")
         else:
-            logger.info("No all packages are valid")
+            logger.info("Not all packages are valid")

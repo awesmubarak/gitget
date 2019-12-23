@@ -20,13 +20,16 @@ class Update(Base):
         package_list = self.get_package_list()
         number_of_packages = len(package_list)
 
+        logger.debug("Making sure there are some packages to update")
         if number_of_packages == 0:
             logger.info("No packages to update")
             exit(0)
 
+        logger.debug("Going through each package")
         for package_number, package_name in enumerate(package_list):
             package_path = package_list[package_name]
 
+            logger.debug(f"Attempting to update {package_name}")
             try:
                 repo = git.Repo(package_path)
                 origins = repo.remotes.origin

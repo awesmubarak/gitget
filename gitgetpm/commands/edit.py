@@ -19,12 +19,16 @@ class Edit(Base):
         filepath = self.get_package_list_filepath()
 
         # https://stackoverflow.com/questions/434597/open-document-with-default-os-application-in-python-both-in-windows-and-mac-os
+        logger.debug("Attempting to open the text editor")
         try:
             if platform.system() == "Darwin":
+                logger.debug("macOS found")
                 subprocess.call(("open", filepath))
             elif platform.system() == "Windows":
+                logger.debug("Windows found")
                 os.startfile(filepath)
             else:
+                logger.debug("Assuming linux")
                 subprocess.call(("xdg-open", filepath))
         except FileNotFoundError:
             logger.error(
