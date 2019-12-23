@@ -32,7 +32,7 @@ class Move(Base):
             logger.error("Location to move package to is not valid")
 
         # verify that the package exists in the package list
-        logging.debug("Checking if package in package list")
+        logger.debug("Checking if package in package list")
         try:
             _ = package_list[package_name]
         except KeyError as e:
@@ -40,7 +40,7 @@ class Move(Base):
             exit(1)
 
         # move the package to the location
-        logging.debug("Attempting to move package")
+        logger.debug("Attempting to move package")
         try:
             mmove(package_list[package_name], location)
             logger.info("Moved package")
@@ -49,7 +49,7 @@ class Move(Base):
             exit(1)
 
         # update package list
-        logging.debug("Updating package list")
+        logger.debug("Updating package list")
         package_list[package_name] = location
         self.write_package_list(package_list)
         logger.info("Saved package information")
