@@ -24,5 +24,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Program would crash when the package list was empty
 
-[2.3.0]: https://github.com/olivierlacan/keep-a-changelog/compare/v2.2.0...v2.3.0
+[2.3.0]: https://github.com/awesmubarak/gitget/compare/v2.2.0...v2.3.0
 [2.2.0]: https://github.com/awesmubarak/gitget/releases/tag/v2.2.0
