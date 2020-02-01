@@ -1,7 +1,5 @@
 from ._base import Base
-from loguru import logger
-from yaml import safe_load
-from os import path
+from importlib import import_module
 
 
 class Doctor(Base):
@@ -17,6 +15,28 @@ class Doctor(Base):
     """
 
     def run(self):
+        # Core modules required in this script
+        try:
+            from loguru import logger
+            from yaml import safe_load
+            from os import path
+        except ModuleNotFoundError as ex:
+            logger.error(f"Could not import one or more modules: {ex}")
+            exit(1)
+
+        # Modules required elsewhere (provides more details when failing)
+        failed_modules = []
+        for module in ("docopt", "git", "yaml", "tabulate"):
+            try:
+                import_module(module)
+            except ModuleNotFoundError as ex:
+                failed_modules.append(str(ex)[17:-1])
+        if failed_modules:
+            failed_modules_str = ", ".join(failed_modules)
+            logger.error(
+                f"Could not import the following modules: {failed_modules_str}"
+            )
+
         # Check if package file exists
         logger.debug("Checking if package file exists")
         package_list_path = self.get_package_list_filepath()  # checks automaticcaly

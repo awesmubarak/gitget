@@ -35,7 +35,7 @@ class Base(object):
         path_exists = path.exists(package_list_path)
         path_is_dir = path.isdir(package_list_path)
 
-        logger.debug("File status found, returning vlaue")
+        logger.debug("File status found, returning value")
         if not path_exists:
             return 1
         elif path_exists and path_is_dir:
@@ -67,8 +67,9 @@ class Base(object):
         try:
             with open(package_list_filepath) as file:
                 package_list = yaml.safe_load(file)
-        except:
-            logger.error("Could not load package list")
+        except Exception as ex:
+            logger.error("Could not load package list due to the following error:")
+            logger.error(ex)
             exit(1)
         logger.debug("Package list loaded")
 
@@ -86,6 +87,6 @@ class Base(object):
             with open(Base.get_package_list_filepath(), "w") as file:
                 yaml.dump(package_list, file, sort_keys=True)
         except:
-            logger.excpetion("Could not write package list")
+            logger.exception("Could not write package list")
             exit(1)
         logger.debug("Packages written to file")
